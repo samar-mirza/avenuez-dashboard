@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AvenueZ — Paid Channels Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f1f5f9; color: #0f172a; padding: 24px; }
+
+  .hdr { background: #0f172a; padding: 18px 22px; border-radius: 12px; margin-bottom: 18px; }
+  .hdr-live { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #639922; flex-shrink: 0; }
+  .hdr-tag { font-size: 10px; color: #888780; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
+  .hdr-title { font-size: 17px; font-weight: 600; color: #f1efe8; margin-bottom: 3px; }
+  .hdr-sub { font-size: 11px; color: #5f5e5a; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+  .kpi { background: #fff; border-radius: 8px; padding: 14px 16px; border: 0.5px solid #e2e8f0; }
+  .kpi-lbl { font-size: 11px; color: #64748b; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+  .kpi-val { font-size: 26px; font-weight: 700; color: #0f172a; line-height: 1.1; }
+  .kpi-sub { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .card { background: #fff; border-radius: 12px; padding: 18px 20px; border: 0.5px solid #e2e8f0; }
+  .card-ttl { font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 12px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 12px; font-size: 11px; color: #64748b; }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .tab { padding: 5px 14px; border-radius: 20px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-size: 12px; font-weight: 500; color: #64748b; transition: all 0.15s; }
+  .tab.on { background: #0f172a; color: #fff; border-color: #0f172a; }
+  .tab:hover:not(.on) { background: #f8fafc; }
+
+  .tbl-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+  .cnt-badge { font-size: 11px; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 10px; font-weight: 600; }
+
+  .tbl-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; font-size: 11px; white-space: nowrap; width: 100%; }
+  th { padding: 7px 10px; text-align: left; color: #94a3b8; font-size: 10px; font-weight: 700; border-bottom: 1px solid #f1f5f9; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.04em; background: #fff; position: sticky; top: 0; }
+  td { padding: 8px 10px; color: #334155; border-bottom: 1px solid #f8fafc; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+  tr:hover td { background: #fafafa; }
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+  .mono { font-family: "SF Mono", "Menlo", monospace; font-size: 10px; color: #64748b; }
+
+  @media (max-width: 768px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .grid2 { grid-template-columns: 1fr; }
+    body { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-live">
+    <span class="live-dot"></span>
+    <span class="hdr-tag">Live · HubSpot sync every 6 hours</span>
+  </div>
+  <div class="hdr-title">AvenueZ — paid channels influenced contacts</div>
+  <div class="hdr-sub">Snapshot: April 22, 2026 &nbsp;·&nbsp; Google AdWords, Facebook & LinkedIn</div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-lbl">Total contacts</div><div class="kpi-val">51</div></div>
+  <div class="kpi"><div class="kpi-lbl">Deals created</div><div class="kpi-val">21</div><div class="kpi-sub">41% of contacts</div></div>
+  <div class="kpi"><div class="kpi-lbl">Closed won</div><div class="kpi-val">7</div><div class="kpi-sub">33% win rate</div></div>
+  <div class="kpi"><div class="kpi-lbl">Total actual MOV</div><div class="kpi-val">219K</div><div class="kpi-sub">monthly orders</div></div>
+  <div class="kpi"><div class="kpi-lbl">Pipeline forecast</div><div class="kpi-val">256K</div><div class="kpi-sub">forecasted MOV</div></div>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <div class="card-ttl">Contacts, deals & wins by channel</div>
+    <div class="legend">
+      <span><span class="dot" style="background:#378ADD"></span>Total contacts</span>
+      <span><span class="dot" style="background:#7F77DD"></span>With deals</span>
+      <span><span class="dot" style="background:#639922"></span>Closed won</span>
+    </div>
+    <div style="position:relative;height:210px"><canvas id="c1"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-ttl">Pipeline stage breakdown</div>
+    <div style="position:relative;height:242px"><canvas id="c2"></canvas></div>
+  </div>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <div class="card-ttl">L30 day order volume distribution</div>
+    <div class="legend">
+      <span><span class="dot" style="background:#888780"></span>Below 1K (10)</span>
+      <span><span class="dot" style="background:#378ADD"></span>1K–15K (18)</span>
+      <span><span class="dot" style="background:#EF9F27"></span>15K–50K (6)</span>
+      <span><span class="dot" style="background:#639922"></span>50K+ (7)</span>
+    </div>
+    <div style="position:relative;height:200px"><canvas id="c3"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-ttl">Top companies by monthly order volume</div>
+    <div class="legend">
+      <span><span class="dot" style="background:#1D9E75"></span>Actual MOV</span>
+      <span><span class="dot" style="background:#EF9F27"></span>Forecast MOV</span>
+    </div>
+    <div style="position:relative;height:280px"><canvas id="c4"></canvas></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="tbl-hdr">
+    <div class="card-ttl" style="margin:0">All contacts</div>
+    <span class="cnt-badge" id="cnt">51 records</span>
+  </div>
+  <div class="tabs">
+    <button class="tab on" onclick="ft('All',this)">All</button>
+    <button class="tab" onclick="ft('Google',this)">Google</button>
+    <button class="tab" onclick="ft('Facebook',this)">Facebook</button>
+    <button class="tab" onclick="ft('LinkedIn',this)">LinkedIn</button>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="min-width:130px">Company name</th>
+          <th style="min-width:190px">Deal name</th>
+          <th style="min-width:100px">Create date</th>
+          <th style="min-width:145px">Deal stage</th>
+          <th style="min-width:120px">L30 day orders</th>
+          <th style="min-width:100px;text-align:right">Forecast MOV</th>
+          <th style="min-width:95px;text-align:right">Actual MOV</th>
+          <th style="min-width:155px">Ad account</th>
+          <th style="min-width:210px">Ad campaign</th>
+          <th style="min-width:140px">Ad campaign ID</th>
+          <th style="min-width:185px">Email</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<p style="text-align:center;font-size:11px;color:#cbd5e1;margin-top:16px">
+  Data sourced from HubSpot via AvenueZ paid channels &nbsp;·&nbsp; Scheduled sync every 6 hours
+</p>
+
+<script>
+var D=[
+  // GOOGLE
+  {co:"Charle Agency",dn:"—",mo:"—",ds:null,l3:"Lower than 1,000",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"alice@charle.co.uk",ch:"Google"},
+  {co:"Azuna",dn:"Azuna - New Deal",mo:"Apr 2026",ds:"Closed Won (SMB)",l3:"50,000+",fm:50000,am:59426,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"andrew@azunafresh.com",ch:"Google"},
+  {co:"Mars Men",dn:"Mars Men - New Deal",mo:"Apr 2026",ds:"Interest (SMB)",l3:"50,000+",fm:null,am:113073,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"andrew@mengotomars.com",ch:"Google"},
+  {co:"—",dn:"—",mo:"—",ds:null,l3:"1,000 - 14,999",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-22691141228",ai:"22691141228",em:"angel@themediterraneandish.com",ch:"Google"},
+  {co:"LANX",dn:"—",mo:"—",ds:null,l3:"50,000+",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"asam.shah@lanxshoes.com",ch:"Google"},
+  {co:"GrowthPros",dn:"Rose Anvil - New Deal",mo:"Mar 2026",ds:"Closed Won (SMB)",l3:"1,000 - 14,999",fm:6000,am:2257,aa:"adwords-5807075370",ac:"adwords-22691141228",ai:"22691141228",em:"brad@growthpros.com",ch:"Google"},
+  {co:"Rokt",dn:"—",mo:"—",ds:null,l3:"50,000+",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"brian.davies589@gmail.com",ch:"Google"},
+  {co:"Nutravision",dn:"Nutravision - ppu",mo:"Mar 2026",ds:"Interest (SMB)",l3:"Lower than 1,000",fm:50,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"brian@nutravision.com.au",ch:"Google"},
+  {co:"LNDR",dn:"LNDR US - New Deal",mo:"Mar 2026",ds:"Evaluation (SMB)",l3:"1,000 - 14,999",fm:5000,am:1513,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"caitlin.xuglassop@lndr.com",ch:"Google"},
+  {co:"Colorfil",dn:"Colorfil - New Deal",mo:"Mar 2026",ds:"Closed Won (SMB)",l3:"1,000 - 14,999",fm:16496,am:16464,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"chad@colorfil.com",ch:"Google"},
+  {co:"The Creative Department",dn:"—",mo:"—",ds:null,l3:"TRUE",fm:null,am:343,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"cooper@thecreativedepartment.com",ch:"Google"},
+  {co:"—",dn:"—",mo:"—",ds:null,l3:"—",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"ddgsturt@gmail.com",ch:"Google"},
+  {co:"—",dn:"—",mo:"—",ds:null,l3:"15,000 - 50,000",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-22691141228",ai:"22691141228",em:"ethan.zhong@xavier.vic.edu.au",ch:"Google"},
+  {co:"Drift and Tide",dn:"—",mo:"—",ds:null,l3:"1,000 - 14,999",fm:null,am:984,aa:"adwords-5807075370",ac:"adwords-22691141228",ai:"22691141228",em:"jkatsoudas@hotmail.com",ch:"Google"},
+  {co:"Encompass",dn:"eReplacementParts.com - Rokt Thanks",mo:"Apr 2026",ds:"Scoping (SMB)",l3:"50,000+",fm:80000,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"jscrine@encompass.com",ch:"Google"},
+  {co:"Moshulu",dn:"Moshulu - New Deal",mo:"Apr 2026",ds:"Closed Lost (SMB)",l3:"15,000 - 50,000",fm:25000,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"kate.james@moshulu.co.uk",ch:"Google"},
+  {co:"Liquidation.store",dn:"Liquidation.store - New Deal",mo:"Mar 2026",ds:"Closed Won (SMB)",l3:"1,000 - 14,999",fm:5000,am:4258,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"kris@liquidation.store",ch:"Google"},
+  {co:"MCSets",dn:"MCSets - New Deal",mo:"Apr 2026",ds:"Interest (SMB)",l3:"Lower than 1,000",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-22691141228",ai:"22691141228",em:"kyle@mcsets.com",ch:"Google"},
+  {co:"—",dn:"—",mo:"—",ds:null,l3:"FALSE",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"michael.markosian@emater.io",ch:"Google"},
+  {co:"Taxify",dn:"—",mo:"—",ds:null,l3:"—",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-22691141228",ai:"22691141228",em:"nicklawson85@gmail.com",ch:"Google"},
+  {co:"Taxify",dn:"—",mo:"—",ds:null,l3:"—",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"nicklawson85@gmail.com",ch:"Google"},
+  {co:"Hacked.com",dn:"—",mo:"—",ds:null,l3:"50,000+",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-22691141228",ai:"22691141228",em:"revokat7@gmail.com",ch:"Google"},
+  {co:"Team Schostak",dn:"Olga's Kitchen - New Deal",mo:"Apr 2026",ds:"Evaluation (SMB)",l3:"15,000 - 50,000",fm:25000,am:null,aa:"adwords-5807075370",ac:"adwords-22691141228",ai:"22691141228",em:"rpjones@teamschostak.com",ch:"Google"},
+  {co:"Hose Pro International",dn:"Hoselink 2 stores",mo:"Mar 2026",ds:"Closed Lost (SMB)",l3:"1,000 - 14,999",fm:25000,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"subodhprajapati@hoselink.com.au",ch:"Google"},
+  {co:"Enzo Clean",dn:"—",mo:"—",ds:null,l3:"Lower than 1,000",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"tamio@enzoclean.com",ch:"Google"},
+  {co:"Rokt",dn:"—",mo:"—",ds:null,l3:"15,000 - 50,000",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-22691141228",ai:"22691141228",em:"val.moskovets@rokt.com",ch:"Google"},
+  {co:"PORELLES",dn:"—",mo:"—",ds:null,l3:"—",fm:null,am:null,aa:"adwords-5807075370",ac:"adwords-19938108151",ai:"19938108151",em:"vladislavkabanov95@gmail.com",ch:"Google"},
+  // FACEBOOK
+  {co:"Sylvane",dn:"Sylvane - New Deal",mo:"Apr 2026",ds:"Closed Won (SMB)",l3:"1,000 - 14,999",fm:null,am:6956,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"alexb@sylvane.com",ch:"Facebook"},
+  {co:"Signature Popcorn",dn:"Signature Popcorn - New Deal",mo:"Mar 2026",ds:"Closed Won (SMB)",l3:"TRUE",fm:1500,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"amber@signaturepopcorn.com",ch:"Facebook"},
+  {co:"Battle Cat Co.",dn:"—",mo:"—",ds:null,l3:"FALSE",fm:null,am:1750,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"angelo@battlecatco.com",ch:"Facebook"},
+  {co:"GrowthPros",dn:"Rose Anvil - New Deal",mo:"Mar 2026",ds:"Closed Won (SMB)",l3:"1,000 - 14,999",fm:6000,am:2257,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"brad@growthpros.com",ch:"Facebook"},
+  {co:"—",dn:"—",mo:"—",ds:null,l3:"1,000 - 14,999",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"chriswaczak@comcast.net",ch:"Facebook"},
+  {co:"Hearing8s",dn:"Hearing8s - New Deal",mo:"Apr 2026",ds:"Closed Lost (SMB)",l3:"1,000 - 14,999",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"devin@hearing8s.com",ch:"Facebook"},
+  {co:"—",dn:"—",mo:"—",ds:null,l3:"Lower than 1,000",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"donnablack102@gmail.com",ch:"Facebook"},
+  {co:"Notable Paper Goods",dn:"Notable Paper Goods + Services - New Deal",mo:"Apr 2026",ds:"Closed Lost (SMB)",l3:"1,000 - 14,999",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"e.joondeph@gmail.com",ch:"Facebook"},
+  {co:"—",dn:"—",mo:"—",ds:null,l3:"Lower than 1,000",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"elizabeth@tophealthsource.com",ch:"Facebook"},
+  {co:"Vitalyte",dn:"—",mo:"—",ds:null,l3:"Lower than 1,000",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"elucas@vitalyte.com",ch:"Facebook"},
+  {co:"QG Med",dn:"—",mo:"—",ds:null,l3:"Lower than 1,000",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"kethompson03@gmail.com",ch:"Facebook"},
+  {co:"—",dn:"—",mo:"—",ds:null,l3:"Lower than 1,000",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"kghxst1@gmail.com",ch:"Facebook"},
+  {co:"rEvolution",dn:"—",mo:"—",ds:null,l3:"1,000 - 14,999",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"kshalaby@revolutionworld.com",ch:"Facebook"},
+  {co:"Korvel",dn:"—",mo:"—",ds:null,l3:"1,000 - 14,999",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"luigimangini10@gmail.com",ch:"Facebook"},
+  {co:"Better Benefits",dn:"—",mo:"—",ds:null,l3:"50,000+",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"maxx@betterbenefits.com",ch:"Facebook"},
+  {co:"2 Dogs Treats",dn:"2 Dogs Treats - New Deal",mo:"Feb 2026",ds:"Closed Lost (SMB)",l3:"1,000 - 14,999",fm:null,am:348,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"mike@2dogstreats.com",ch:"Facebook"},
+  {co:"2 Dogs Treats",dn:"2 Dogs Treats - New Deal",mo:"Mar 2026",ds:"Scoping (SMB)",l3:"1,000 - 14,999",fm:null,am:348,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"mike@2dogstreats.com",ch:"Facebook"},
+  {co:"CobaltAi",dn:"—",mo:"—",ds:null,l3:"Lower than 1,000",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"mike@cobaltai.app",ch:"Facebook"},
+  {co:"FIT Strong & Healthy",dn:"—",mo:"—",ds:null,l3:"TRUE",fm:null,am:41,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"natalia.vagner29@gmail.com",ch:"Facebook"},
+  {co:"Brickell Men's Products",dn:"Brickell Men's Products\u00ae - New Deal",mo:"Mar 2026",ds:"Scoping (SMB)",l3:"1,000 - 14,999",fm:7000,am:7926,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"nick@brickellmensproducts.com",ch:"Facebook"},
+  {co:"—",dn:"—",mo:"—",ds:null,l3:"—",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"rexxdraws@gmail.com",ch:"Facebook"},
+  {co:"Rokt",dn:"—",mo:"—",ds:null,l3:"15,000 - 50,000",fm:null,am:null,aa:"facebook-209828540690214",ac:"facebook-120237736407690695",ai:"120237736407690695",em:"val.moskovets@rokt.com",ch:"Facebook"},
+  // LINKEDIN
+  {co:"Alpacas of Montana",dn:"Alpacas of Montana - New Deal",mo:"Apr 2026",ds:"Evaluation (SMB)",l3:"1,000 - 14,999",fm:4000,am:1176,aa:"linkedin-510107792",ac:"linkedin-786689516",ai:"786689516",em:"budd@alpacastek.com",ch:"LinkedIn"},
+  {co:"Carrus Health",dn:"—",mo:"—",ds:null,l3:"15,000 - 50,000",fm:null,am:null,aa:"linkedin-510107792",ac:"linkedin-786689516",ai:"786689516",em:"michaelkitman@carrus-health.com",ch:"LinkedIn"}
+];
+
+var chB={
+  Google:'<span class="badge" style="background:#E6F1FB;color:#0C447C">Google</span>',
+  Facebook:'<span class="badge" style="background:#EEEDFE;color:#3C3489">Facebook</span>',
+  LinkedIn:'<span class="badge" style="background:#E1F5EE;color:#085041">LinkedIn</span>'
+};
+
+function dsBadge(ds){
+  if(!ds) return '<span style="color:#cbd5e1">—</span>';
+  var k=ds.replace(' (SMB)','');
+  var m={"Closed Won":"background:#EAF3DE;color:#27500A","Closed Lost":"background:#FCEBEB;color:#791F1F","Evaluation":"background:#FEF3C7;color:#92400E","Interest":"background:#EEEDFE;color:#3C3489","Scoping":"background:#E1F5EE;color:#085041"};
+  return '<span class="badge" style="'+(m[k]||'background:#f1f5f9;color:#64748b')+'">'+ds+'</span>';
+}
+
+var af="All";
+function ft(ch,btn){
+  af=ch;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  btn.classList.add('on');
+  rt();
+}
+function rt(){
+  var rows=af==="All"?D:D.filter(function(d){return d.ch===af;});
+  document.getElementById('cnt').textContent=rows.length+' records';
+  document.getElementById('tbody').innerHTML=rows.map(function(d){
+    return '<tr>'+
+      '<td title="'+d.co+'">'+d.co+'</td>'+
+      '<td title="'+d.dn+'">'+d.dn+'</td>'+
+      '<td>'+d.mo+'</td>'+
+      '<td>'+dsBadge(d.ds)+'</td>'+
+      '<td>'+d.l3+'</td>'+
+      '<td style="text-align:right;color:#94a3b8">'+(d.fm?d.fm.toLocaleString():'—')+'</td>'+
+      '<td style="text-align:right;'+(d.am?'color:#0F6E56;font-weight:700':'color:#cbd5e1')+'">'+
+        (d.am?d.am.toLocaleString():'—')+'</td>'+
+      '<td class="mono" title="'+d.aa+'">'+d.aa+'</td>'+
+      '<td class="mono" title="'+d.ac+'">'+d.ac+'</td>'+
+      '<td class="mono">'+d.ai+'</td>'+
+      '<td style="color:#64748b" title="'+d.em+'">'+d.em+'</td>'+
+    '</tr>';
+  }).join('');
+}
+rt();
+
+var gc='rgba(0,0,0,0.06)';
+
+new Chart(document.getElementById('c1'),{
+  type:'bar',
+  data:{
+    labels:['Google','Facebook','LinkedIn'],
+    datasets:[
+      {label:'Total contacts',data:[27,22,2],backgroundColor:'#378ADD',borderRadius:4},
+      {label:'With deals',data:[12,8,1],backgroundColor:'#7F77DD',borderRadius:4},
+      {label:'Closed won',data:[4,3,0],backgroundColor:'#639922',borderRadius:4}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+    x:{grid:{display:false},ticks:{font:{size:12}},border:{display:false}},
+    y:{grid:{color:gc},ticks:{font:{size:11}},beginAtZero:true,border:{display:false}}
+  }}
+});
+
+new Chart(document.getElementById('c2'),{
+  type:'bar',
+  data:{
+    labels:['No deal','Closed won','Closed lost','Evaluation','Scoping','Interest'],
+    datasets:[{
+      data:[30,7,5,3,3,3],
+      backgroundColor:['#94a3b8','#639922','#E24B4A','#EF9F27','#1D9E75','#7F77DD'],
+      borderRadius:4
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ' '+ctx.parsed.x+' contacts';}}}},
+    scales:{
+      x:{grid:{color:gc},ticks:{font:{size:11}},beginAtZero:true,border:{display:false}},
+      y:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}}
+    }
+  }
+});
+
+new Chart(document.getElementById('c3'),{
+  type:'doughnut',
+  data:{
+    labels:['Below 1K','1K–15K','15K–50K','50K+'],
+    datasets:[{data:[10,18,6,7],backgroundColor:['#888780','#378ADD','#EF9F27','#639922'],borderWidth:3,borderColor:'#fff'}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ' '+ctx.label+': '+ctx.parsed+' contacts';}}}}
+  }
+});
+
+var mv=[
+  {c:'Mars Men',am:113073,fm:null},
+  {c:'Azuna',am:59426,fm:50000},
+  {c:'Colorfil',am:16464,fm:16496},
+  {c:'Brickell',am:7926,fm:7000},
+  {c:'Sylvane',am:6956,fm:null},
+  {c:'Liquidation.store',am:4258,fm:5000},
+  {c:'GrowthPros',am:2257,fm:6000},
+  {c:'Battle Cat Co.',am:1750,fm:null},
+  {c:'LNDR',am:1513,fm:5000},
+  {c:'Alpacas of Montana',am:1176,fm:4000}
+];
+new Chart(document.getElementById('c4'),{
+  type:'bar',
+  data:{
+    labels:mv.map(function(d){return d.c;}),
+    datasets:[
+      {label:'Actual MOV',data:mv.map(function(d){return d.am;}),backgroundColor:'#1D9E75',borderRadius:4},
+      {label:'Forecast MOV',data:mv.map(function(d){return d.fm;}),backgroundColor:'#EF9F27',borderRadius:4}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ' '+ctx.dataset.label+': '+((ctx.parsed.x||0).toLocaleString());}}}},
+    scales:{
+      x:{grid:{color:gc},ticks:{font:{size:10},callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K':v;}},beginAtZero:true,border:{display:false}},
+      y:{grid:{display:false},ticks:{font:{size:10}},border:{display:false}}
+    }
+  }
+});
+</script>
+</body>
+</html>
