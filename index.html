@@ -1,399 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AvenueZ — Paid Channels Influenced Contacts</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AvenueZ — paid channels influenced contacts</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  :root {
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --border: #e2e8f0;
-    --text: #0f172a;
-    --muted: #64748b;
-  }
   * { box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.45;
-    padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0; padding: 24px; background: #f8fafc; color: #0f172a;
   }
-  .container { max-width: 1400px; margin: 0 auto; }
   .header {
-    background: #0f172a;
-    color: #f8fafc;
-    border-radius: 12px;
-    padding: 18px 22px;
-    margin-bottom: 20px;
+    background: #0f172a; color: #fff; border-radius: 12px;
+    padding: 18px 22px; margin-bottom: 20px;
   }
-  .live-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: #cbd5e1;
-    margin-bottom: 10px;
+  .live-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: #94a3b8; margin-bottom: 10px;
   }
   .live-dot {
     width: 8px; height: 8px; border-radius: 50%;
-    background: #22c55e;
-    box-shadow: 0 0 8px rgba(34,197,94,0.7);
-    animation: pulse 2s ease-in-out infinite;
+    background: #4ade80; box-shadow: 0 0 8px #4ade80;
+    animation: pulse 2s infinite;
   }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-  .header h1 { margin: 0; font-size: 22px; font-weight: 600; }
-  .header .subtitle { margin-top: 4px; font-size: 13px; color: #94a3b8; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  .header h1 { margin: 0 0 6px; font-size: 22px; font-weight: 600; }
+  .header .subtitle { color: #cbd5e1; font-size: 13px; }
   .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 14px;
-    margin-bottom: 20px;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 12px; margin-bottom: 20px;
   }
-  .kpi {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    padding: 16px 18px;
-  }
-  .kpi .label {
-    font-size: 11px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 6px;
-  }
-  .kpi .value {
-    font-size: 28px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .chart-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 14px;
-  }
-  .chart-card {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-  }
-  .chart-card h3 { margin: 0 0 14px 0; font-size: 14px; font-weight: 600; }
-  .chart-canvas-wrap { position: relative; height: 280px; }
-  .legend {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .kpi-card { background: #fff; border: 0.5px solid #e2e8f0; border-radius: 8px; padding: 16px; }
+  .kpi-label { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1; }
+  .kpi-sub { font-size: 11px; color: #64748b; margin-top: 6px; }
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .chart-card { background: #fff; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+  .chart-title { font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 14px; }
+  .chart-wrap { position: relative; height: 280px; }
+  .chart-legend { display: flex; gap: 14px; margin-bottom: 10px; flex-wrap: wrap; font-size: 12px; color: #475569; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
   .legend-swatch { width: 10px; height: 10px; border-radius: 2px; }
-  .table-card {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin-top: 6px;
-  }
-  .table-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 14px;
-  }
-  .table-header h3 { margin: 0; font-size: 14px; font-weight: 600; }
-  .table-header .badge {
-    background: #f1f5f9; color: var(--muted);
-    padding: 3px 9px; border-radius: 12px; font-size: 11px;
-  }
-  .tabs {
-    display: flex; gap: 6px; margin-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  .tab {
-    background: none; border: none; padding: 8px 14px;
-    cursor: pointer; font-size: 12px; color: var(--muted);
-    border-bottom: 2px solid transparent;
-    font-family: inherit;
-  }
-  .tab.active { color: var(--text); border-bottom-color: #378ADD; font-weight: 600; }
+  .legend-count { color: #94a3b8; }
+  .table-card { background: #fff; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+  .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .table-title { font-size: 14px; font-weight: 600; color: #0f172a; }
+  .record-badge { background: #f1f5f9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 10px; }
+  .filter-tabs { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; }
+  .filter-tab { background: none; border: none; cursor: pointer; padding: 8px 14px; font-size: 12px; color: #64748b; border-bottom: 2px solid transparent; font-weight: 500; }
+  .filter-tab.active { color: #0f172a; border-bottom-color: #0f172a; font-weight: 600; }
   .table-scroll { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th {
-    text-align: left; padding: 10px 8px;
-    font-weight: 600; color: var(--muted);
-    background: #f8fafc; border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  td {
-    padding: 9px 8px; border-bottom: 1px solid #f1f5f9;
-    vertical-align: middle;
-  }
+  th { text-align: left; padding: 8px 10px; background: #f8fafc; color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid #f1f5f9; color: #0f172a; vertical-align: middle; }
   td.mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; color: #475569; }
   td.right { text-align: right; }
-  td.actual { text-align: right; color: #1D9E75; font-weight: 600; }
-  td.dash { color: #cbd5e1; }
-  .stage-badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-size: 11px; font-weight: 500;
-  }
-  .stage-won  { background: #ECFAE0; color: #3B6810; }
-  .stage-lost { background: #FDECEC; color: #8B2222; }
-  .stage-eval { background: #FEF4E0; color: #87560D; }
-  .stage-int  { background: #EEEDFE; color: #3C3489; }
-  .stage-scope { background: #E0F6EE; color: #08503D; }
-  .ch-badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-size: 11px; font-weight: 500;
-  }
-  .ch-Google   { background: #E6F1FB; color: #0C447C; }
-  .ch-Facebook { background: #EEEDFE; color: #3C3489; }
-  .ch-LinkedIn { background: #E1F5EE; color: #085041; }
-  .footer {
-    margin-top: 20px; text-align: center;
-    font-size: 11px; color: var(--muted);
-  }
-  @media (max-width: 1100px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .chart-row { grid-template-columns: 1fr; }
-  }
+  .stage-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+  .stage-won { background: #DCFCE7; color: #166534; }
+  .stage-lost { background: #FEE2E2; color: #991B1B; }
+  .stage-eval { background: #FEF3C7; color: #92400E; }
+  .stage-interest { background: #EDE9FE; color: #5B21B6; }
+  .stage-scoping { background: #CCFBF1; color: #115E59; }
+  .stage-other { background: #f1f5f9; color: #475569; }
+  .ch-google { background: #E6F1FB; color: #0C447C; }
+  .ch-facebook { background: #EEEDFE; color: #3C3489; }
+  .ch-linkedin { background: #E1F5EE; color: #085041; }
+  .mov-actual { color: #1D9E75; font-weight: 600; }
+  .footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 20px; padding: 14px; }
+  .dash { color: #cbd5e1; }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="live-pill"><span class="live-dot"></span> LIVE · HUBSPOT SYNC EVERY 6 HOURS</div>
-    <h1>AvenueZ — paid channels influenced contacts</h1>
-    <div class="subtitle">Snapshot: May 18, 2026 · Google AdWords, Facebook &amp; LinkedIn</div>
-  </div>
-
-  <div class="kpi-grid">
-    <div class="kpi"><div class="label">Total contacts</div><div class="value">109</div><div class="sub">across 3 channels</div></div>
-    <div class="kpi"><div class="label">Deals created</div><div class="value">45</div><div class="sub">41% of contacts</div></div>
-    <div class="kpi"><div class="label">Closed won</div><div class="value">14</div><div class="sub">31% win rate</div></div>
-    <div class="kpi"><div class="label">Total actual MOV</div><div class="value">446K</div><div class="sub">monthly orders</div></div>
-    <div class="kpi"><div class="label">Pipeline forecast</div><div class="value">517K</div><div class="sub">forecasted MOV</div></div>
-  </div>
-
-  <div class="chart-row">
-    <div class="chart-card">
-      <h3>Contacts, deals &amp; wins by channel</h3>
-      <div class="legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:#378ADD"></span>Total contacts</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#7F77DD"></span>With deals</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#639922"></span>Closed won</span>
-      </div>
-      <div class="chart-canvas-wrap"><canvas id="chChannel"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Pipeline stage breakdown</h3>
-      <div class="chart-canvas-wrap"><canvas id="chStage"></canvas></div>
-    </div>
-  </div>
-
-  <div class="chart-row">
-    <div class="chart-card">
-      <h3>L30 day order volume distribution</h3>
-      <div class="legend" id="l30Legend"></div>
-      <div class="chart-canvas-wrap"><canvas id="chL30"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Top companies by monthly order volume</h3>
-      <div class="legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:#1D9E75"></span>Actual MOV</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#EF9F27"></span>Forecast MOV</span>
-      </div>
-      <div class="chart-canvas-wrap"><canvas id="chTop"></canvas></div>
-    </div>
-  </div>
-
-  <div class="table-card">
-    <div class="table-header">
-      <h3>All contacts</h3>
-      <span class="badge" id="recBadge">109 records</span>
-    </div>
-    <div class="tabs">
-      <button class="tab active" data-ch="All" onclick="filterChannel('All', this)">All</button>
-      <button class="tab" data-ch="Google" onclick="filterChannel('Google', this)">Google</button>
-      <button class="tab" data-ch="Facebook" onclick="filterChannel('Facebook', this)">Facebook</button>
-      <button class="tab" data-ch="LinkedIn" onclick="filterChannel('LinkedIn', this)">LinkedIn</button>
-    </div>
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th style="min-width:130px">Company name</th>
-            <th style="min-width:190px">Deal name</th>
-            <th style="min-width:100px">Create date</th>
-            <th style="min-width:145px">Deal stage</th>
-            <th style="min-width:120px">L30 day orders</th>
-            <th style="min-width:100px;text-align:right">Forecast MOV</th>
-            <th style="min-width:95px;text-align:right">Actual MOV</th>
-            <th style="min-width:155px">Ad account</th>
-            <th style="min-width:210px">Ad campaign</th>
-            <th style="min-width:140px">Ad campaign ID</th>
-            <th style="min-width:185px">Email</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="footer">Data sourced from HubSpot via AvenueZ paid channels · Scheduled sync every 6 hours</div>
+<div class="header">
+  <div class="live-tag"><span class="live-dot"></span>LIVE · HUBSPOT SYNC EVERY 6 HOURS</div>
+  <h1>AvenueZ — paid channels influenced contacts</h1>
+  <div class="subtitle">Snapshot: May 18, 2026 · Google AdWords, Facebook &amp; LinkedIn</div>
 </div>
 
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Total contacts</div><div class="kpi-value">109</div></div>
+  <div class="kpi-card"><div class="kpi-label">Deals created</div><div class="kpi-value">45</div><div class="kpi-sub">41% of contacts</div></div>
+  <div class="kpi-card"><div class="kpi-label">Closed won</div><div class="kpi-value">14</div><div class="kpi-sub">31% win rate</div></div>
+  <div class="kpi-card"><div class="kpi-label">Total actual MOV</div><div class="kpi-value">446.4K</div><div class="kpi-sub">monthly orders</div></div>
+  <div class="kpi-card"><div class="kpi-label">Pipeline forecast</div><div class="kpi-value">516.6K</div><div class="kpi-sub">forecasted MOV</div></div>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card">
+    <div class="chart-title">Contacts, deals &amp; wins by channel</div>
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#378ADD"></span>Total contacts</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#7F77DD"></span>With deals</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#639922"></span>Closed won</span>
+    </div>
+    <div class="chart-wrap"><canvas id="chart1"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Pipeline stage breakdown</div>
+    <div class="chart-wrap"><canvas id="chart2"></canvas></div>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card">
+    <div class="chart-title">L30 day order volume distribution</div>
+    <div id="donut-legend" class="chart-legend"></div>
+    <div class="chart-wrap"><canvas id="chart3"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Top companies by monthly order volume</div>
+    <div class="chart-wrap"><canvas id="chart4"></canvas></div>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="table-header">
+    <div class="table-title">All contacts</div>
+    <div class="record-badge" id="recordCount">109 records</div>
+  </div>
+  <div class="filter-tabs">
+    <button class="filter-tab active" data-ch="all" onclick="filterChannel('all', this)">All</button>
+    <button class="filter-tab" data-ch="Google" onclick="filterChannel('Google', this)">Google</button>
+    <button class="filter-tab" data-ch="Facebook" onclick="filterChannel('Facebook', this)">Facebook</button>
+    <button class="filter-tab" data-ch="LinkedIn" onclick="filterChannel('LinkedIn', this)">LinkedIn</button>
+  </div>
+  <div class="table-scroll">
+    <table>
+      <thead><tr>
+        <th style="min-width:130px">Company name</th>
+        <th style="min-width:190px">Deal name</th>
+        <th style="min-width:100px">Create date</th>
+        <th style="min-width:145px">Deal stage</th>
+        <th style="min-width:120px">L30 day orders</th>
+        <th style="min-width:100px;text-align:right">Forecast MOV</th>
+        <th style="min-width:95px;text-align:right">Actual MOV</th>
+        <th style="min-width:155px">Ad account</th>
+        <th style="min-width:210px">Ad campaign</th>
+        <th style="min-width:140px">Ad campaign ID</th>
+        <th style="min-width:185px">Email</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">Data sourced from HubSpot via AvenueZ paid channels · Scheduled sync every 6 hours</div>
+
 <script>
-const DATA = [{"co": "Charle Agency - Shopify Plus Partner Agency", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "alice@charle.co.uk", "ch": "Google"}, {"co": "Azuna", "dn": "Azuna - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "l3": "50,000+", "fm": "50000", "am": "59426", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@azunafresh.com", "ch": "Google"}, {"co": "Mars Men", "dn": "Mars Men - New Deal", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "50,000+", "fm": null, "am": "113073", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@mengotomars.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "angel@themediterraneandish.com", "ch": "Google"}, {"co": "LANX", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "asam.shah@lanxshoes.com", "ch": "Google"}, {"co": "GrowthPros", "dn": "Rose Anvil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "6000", "am": "2257", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "brad@growthpros.com", "ch": "Google"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian.davies589@gmail.com", "ch": "Google"}, {"co": "Nutravision", "dn": "Nutravision - ppu", "mo": "2026-03-01", "ds": "Interest (SMB)", "l3": "Lower than 1,000", "fm": "50", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian@nutravision.com.au", "ch": "Google"}, {"co": "LNDR", "dn": "LNDR US - New Deal", "mo": "2026-03-01", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "1513", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "caitlin.xuglassop@lndr.com", "ch": "Google"}, {"co": "Colorfil", "dn": "Colorfil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "16496", "am": "16464", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "chad@colorfil.com", "ch": "Google"}, {"co": "The Creative Department", "dn": null, "mo": null, "ds": null, "l3": "TRUE", "fm": null, "am": "343", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "cooper@thecreativedepartment.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "ddgsturt@gmail.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "ethan.zhong@xavier.vic.edu.au", "ch": "Google"}, {"co": "Drift and Tide", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": "984", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "jkatsoudas@hotmail.com", "ch": "Google"}, {"co": "Encompass", "dn": "eReplacementParts.com - Rokt Thanks", "mo": "2026-04-01", "ds": "Scoping (SMB)", "l3": "50,000+", "fm": "80000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "jscrine@encompass.com", "ch": "Google"}, {"co": "Moshulu", "dn": "Moshulu - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kate.james@moshulu.co.uk", "ch": "Google"}, {"co": "Liquidation.store", "dn": "Liquidation.store - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "4258", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kris@liquidation.store", "ch": "Google"}, {"co": "MCSets", "dn": "MCSets - New Deal", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "kyle@mcsets.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "FALSE", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "michael.markosian@emater.io", "ch": "Google"}, {"co": "Taxify", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "nicklawson85@gmail.com", "ch": "Google"}, {"co": "Taxify", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "nicklawson85@gmail.com", "ch": "Google"}, {"co": "Hacked.com", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "revokat7@gmail.com", "ch": "Google"}, {"co": "Team Schostak", "dn": "Olga's Kitchen - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "rpjones@teamschostak.com", "ch": "Google"}, {"co": "Hose Pro International Pty Ltd", "dn": "Hoselink 2 stores", "mo": "2026-03-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "subodhprajapati@hoselink.com.au", "ch": "Google"}, {"co": "Enzo Clean", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "tamio@enzoclean.com", "ch": "Google"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "val.moskovets@rokt.com", "ch": "Google"}, {"co": "PORELLES", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "vladislavkabanov95@gmail.com", "ch": "Google"}, {"co": "Sylvane", "dn": "Sylvane - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": "6956", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "alexb@sylvane.com", "ch": "Facebook"}, {"co": "Signature Popcorn", "dn": "Signature Popcorn - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "TRUE", "fm": "1500", "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "amber@signaturepopcorn.com", "ch": "Facebook"}, {"co": "Battle Cat Co.", "dn": null, "mo": null, "ds": null, "l3": "FALSE", "fm": null, "am": "1750", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "angelo@battlecatco.com", "ch": "Facebook"}, {"co": "GrowthPros", "dn": "Rose Anvil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "6000", "am": "2257", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "brad@growthpros.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "chriswaczak@comcast.net", "ch": "Facebook"}, {"co": "Hearing8s", "dn": "Hearing8s - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "devin@hearing8s.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "donnablack102@gmail.com", "ch": "Facebook"}, {"co": "Notable Paper Goods + Services", "dn": "Notable Paper Goods + Services - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "e.joondeph@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elizabeth@tophealthsource.com", "ch": "Facebook"}, {"co": "Vitalyte", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elucas@vitalyte.com", "ch": "Facebook"}, {"co": "QG Med", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kethompson03@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kghxst1@gmail.com", "ch": "Facebook"}, {"co": "rEvolution", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kshalaby@revolutionworld.com", "ch": "Facebook"}, {"co": "Korvel", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "luigimangini10@gmail.com", "ch": "Facebook"}, {"co": "Better Benefits", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "maxx@betterbenefits.com", "ch": "Facebook"}, {"co": "2 Dogs Treats", "dn": "2 Dogs Treats - New Deal", "mo": "2026-02-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": "348", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@2dogstreats.com", "ch": "Facebook"}, {"co": "2 Dogs Treats", "dn": "2 Dogs Treats - New Deal", "mo": "2026-03-01", "ds": "Scoping (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": "348", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@2dogstreats.com", "ch": "Facebook"}, {"co": "CobaltAi", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@cobaltai.app", "ch": "Facebook"}, {"co": "FIT Strong & Healthy", "dn": null, "mo": null, "ds": null, "l3": "TRUE", "fm": null, "am": "41", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "natalia.vagner29@gmail.com", "ch": "Facebook"}, {"co": "Brickell Men's Products", "dn": "Brickell Men’s Products® - New Deal", "mo": "2026-03-01", "ds": "Scoping (SMB)", "l3": "1,000 - 14,999", "fm": "7000", "am": "7926", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "nick@brickellmensproducts.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "rexxdraws@gmail.com", "ch": "Facebook"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "val.moskovets@rokt.com", "ch": "Facebook"}, {"co": "Alpacas of Montana", "dn": "Alpacas of Montana - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "4000", "am": "1176", "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "budd@alpacastek.com", "ch": "LinkedIn"}, {"co": "Carrus Health", "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "michaelkitman@carrus-health.com", "ch": "LinkedIn"}, {"co": "Charle Agency - Shopify Plus Partner Agency", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "alice@charle.co.uk", "ch": "Google"}, {"co": "Azuna", "dn": "Azuna - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "l3": "50,000", "fm": "50000", "am": "65835", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@azunafresh.com", "ch": "Google"}, {"co": "Mars Men", "dn": "Mars Men - New Deal", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "50,000", "fm": null, "am": "114086", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@mengotomars.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "angel@themediterraneandish.com", "ch": "Google"}, {"co": "LANX", "dn": null, "mo": null, "ds": null, "l3": "50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "asam.shah@lanxshoes.com", "ch": "Google"}, {"co": "GrowthPros", "dn": "Rose Anvil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "6000", "am": "2199", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "brad@growthpros.com", "ch": "Google"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "l3": "50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian.davies589@gmail.com", "ch": "Google"}, {"co": "Nutravision", "dn": "Nutravision - ppu", "mo": "2026-03-01", "ds": "Interest (SMB)", "l3": "Lower than 1,000", "fm": "50", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian@nutravision.com.au", "ch": "Google"}, {"co": "LNDR", "dn": "LNDR US - New Deal", "mo": "2026-03-01", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "1513", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "caitlin.xuglassop@lndr.com", "ch": "Google"}, {"co": "Colorfil", "dn": "Colorfil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "16496", "am": "15784", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "chad@colorfil.com", "ch": "Google"}, {"co": "The Creative Department", "dn": null, "mo": null, "ds": null, "l3": "TRUE", "fm": null, "am": "255", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "cooper@thecreativedepartment.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "ddgsturt@gmail.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "ethan.zhong@xavier.vic.edu.au", "ch": "Google"}, {"co": "Drift and Tide", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": "1150", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "jkatsoudas@hotmail.com", "ch": "Google"}, {"co": "Encompass", "dn": "eReplacementParts.com - Rokt Thanks", "mo": "2026-04-01", "ds": "Scoping (SMB)", "l3": "50,000", "fm": "80000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "jscrine@encompass.com", "ch": "Google"}, {"co": "Moshulu", "dn": "Moshulu - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kate.james@moshulu.co.uk", "ch": "Google"}, {"co": "Liquidation.store", "dn": "Liquidation.store - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "3903", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kris@liquidation.store", "ch": "Google"}, {"co": "MCSets", "dn": "MCSets - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "Lower than 1,000", "fm": "500", "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "kyle@mcsets.com", "ch": "Google"}, {"co": "waversdreams", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": "103", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "lambospeed787@gmail.com", "ch": "Google"}, {"co": "Sunny Road", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "lizzy@sunnyroad.co", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "FALSE", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "michael.markosian@emater.io", "ch": "Google"}, {"co": "Taxify", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "nicklawson85@gmail.com", "ch": "Google"}, {"co": "Taxify", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "nicklawson85@gmail.com", "ch": "Google"}, {"co": "Hacked.com", "dn": null, "mo": null, "ds": null, "l3": "50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "revokat7@gmail.com", "ch": "Google"}, {"co": "Team Schostak", "dn": "Olga's Kitchen - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "rpjones@teamschostak.com", "ch": "Google"}, {"co": "Hose Pro International Pty Ltd", "dn": "Hoselink 2 stores", "mo": "2026-03-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "subodhprajapati@hoselink.com.au", "ch": "Google"}, {"co": "Enzo Clean", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "tamio@enzoclean.com", "ch": "Google"}, {"co": "Rokt", "dn": "test", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "val.moskovets@rokt.com", "ch": "Google"}, {"co": "PORELLES", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "vladislavkabanov95@gmail.com", "ch": "Google"}, {"co": "Sylvane", "dn": "Sylvane - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": "6876", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "alexb@sylvane.com", "ch": "Facebook"}, {"co": "Signature Popcorn", "dn": "Signature Popcorn - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "TRUE", "fm": "1500", "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "amber@signaturepopcorn.com", "ch": "Facebook"}, {"co": "Battle Cat Co.", "dn": null, "mo": null, "ds": null, "l3": "FALSE", "fm": null, "am": "1819", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "angelo@battlecatco.com", "ch": "Facebook"}, {"co": "GrowthPros", "dn": "Rose Anvil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "6000", "am": "2199", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "brad@growthpros.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "chriswaczak@comcast.net", "ch": "Facebook"}, {"co": "Hearing8s", "dn": "Hearing8s - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "devin@hearing8s.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "donnablack102@gmail.com", "ch": "Facebook"}, {"co": "Notable Paper Goods + Services", "dn": "Notable Paper Goods + Services - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "e.joondeph@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elizabeth@tophealthsource.com", "ch": "Facebook"}, {"co": "Vitalyte", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elucas@vitalyte.com", "ch": "Facebook"}, {"co": "QG Med", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kethompson03@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kghxst1@gmail.com", "ch": "Facebook"}, {"co": "rEvolution", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kshalaby@revolutionworld.com", "ch": "Facebook"}, {"co": "Korvel", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "luigimangini10@gmail.com", "ch": "Facebook"}, {"co": "Better Benefits", "dn": null, "mo": null, "ds": null, "l3": "50,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "maxx@betterbenefits.com", "ch": "Facebook"}, {"co": "2 Dogs Treats", "dn": "2 Dogs Treats - New Deal", "mo": "2026-02-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": "353", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@2dogstreats.com", "ch": "Facebook"}, {"co": "2 Dogs Treats", "dn": "2 Dogs Treats - New Deal", "mo": "2026-03-01", "ds": "Scoping (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": "353", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@2dogstreats.com", "ch": "Facebook"}, {"co": "CobaltAi", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@cobaltai.app", "ch": "Facebook"}, {"co": "FIT Strong & Healthy", "dn": null, "mo": null, "ds": null, "l3": "TRUE", "fm": null, "am": "37", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "natalia.vagner29@gmail.com", "ch": "Facebook"}, {"co": "Brickell Men's Products", "dn": "Brickell Men’s Products® - New Deal", "mo": "2026-03-01", "ds": "Scoping (SMB)", "l3": "1,000 - 14,999", "fm": "7000", "am": "8520", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "nick@brickellmensproducts.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "rexxdraws@gmail.com", "ch": "Facebook"}, {"co": "Rokt", "dn": "test", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "val.moskovets@rokt.com", "ch": "Facebook"}, {"co": "Alpacas of Montana", "dn": "Alpacas of Montana - New Deal", "mo": "Apr 2026", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "4,000", "am": "1,176", "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "budd@alpacastek.com", "ch": "LinkedIn"}, {"co": "Carrus Health", "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "michaelkitman@carrus-health.com", "ch": "LinkedIn"}, {"co": "Alpacas of Montana", "dn": "Alpacas of Montana - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "4000", "am": "1134", "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "budd@alpacastek.com", "ch": "LinkedIn"}, {"co": "Orox Leather Co.", "dn": null, "mo": null, "ds": null, "l3": "50,000", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "jcarey@oroxleathermakers.com", "ch": "LinkedIn"}, {"co": "Leverage Clear", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "jon@leverageclear.com", "ch": "LinkedIn"}, {"co": "Carrus Health", "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "michaelkitman@carrus-health.com", "ch": "LinkedIn"}, {"co": "TravelRights Pro", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "travelpro3377@gmail.com", "ch": "LinkedIn"}];
-let activeChannel = 'All';
+const DATA = [{"co": "Charle Agency - Shopify Plus Partner Agency", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "alice@charle.co.uk", "ch": "Google"}, {"co": "Azuna", "dn": "Azuna - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "l3": "50,000+", "fm": "50000", "am": "59426", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@azunafresh.com", "ch": "Google"}, {"co": "Mars Men", "dn": "Mars Men - New Deal", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "50,000+", "fm": null, "am": "113073", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@mengotomars.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "angel@themediterraneandish.com", "ch": "Google"}, {"co": "LANX", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "asam.shah@lanxshoes.com", "ch": "Google"}, {"co": "GrowthPros", "dn": "Rose Anvil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "6000", "am": "2257", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "brad@growthpros.com", "ch": "Google"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian.davies589@gmail.com", "ch": "Google"}, {"co": "Nutravision", "dn": "Nutravision - ppu", "mo": "2026-03-01", "ds": "Interest (SMB)", "l3": "Lower than 1,000", "fm": "50", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian@nutravision.com.au", "ch": "Google"}, {"co": "LNDR", "dn": "LNDR US - New Deal", "mo": "2026-03-01", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "1513", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "caitlin.xuglassop@lndr.com", "ch": "Google"}, {"co": "Colorfil", "dn": "Colorfil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "16496", "am": "16464", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "chad@colorfil.com", "ch": "Google"}, {"co": "The Creative Department", "dn": null, "mo": null, "ds": null, "l3": "TRUE", "fm": null, "am": "343", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "cooper@thecreativedepartment.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "ddgsturt@gmail.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "ethan.zhong@xavier.vic.edu.au", "ch": "Google"}, {"co": "Drift and Tide", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": "984", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "jkatsoudas@hotmail.com", "ch": "Google"}, {"co": "Encompass", "dn": "eReplacementParts.com - Rokt Thanks", "mo": "2026-04-01", "ds": "Scoping (SMB)", "l3": "50,000+", "fm": "80000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "jscrine@encompass.com", "ch": "Google"}, {"co": "Moshulu", "dn": "Moshulu - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kate.james@moshulu.co.uk", "ch": "Google"}, {"co": "Liquidation.store", "dn": "Liquidation.store - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "4258", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kris@liquidation.store", "ch": "Google"}, {"co": "MCSets", "dn": "MCSets - New Deal", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "kyle@mcsets.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "FALSE", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "michael.markosian@emater.io", "ch": "Google"}, {"co": "Taxify", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "nicklawson85@gmail.com", "ch": "Google"}, {"co": "Taxify", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "nicklawson85@gmail.com", "ch": "Google"}, {"co": "Hacked.com", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "revokat7@gmail.com", "ch": "Google"}, {"co": "Team Schostak", "dn": "Olga's Kitchen - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "rpjones@teamschostak.com", "ch": "Google"}, {"co": "Hose Pro International Pty Ltd", "dn": "Hoselink 2 stores", "mo": "2026-03-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "subodhprajapati@hoselink.com.au", "ch": "Google"}, {"co": "Enzo Clean", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "tamio@enzoclean.com", "ch": "Google"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "val.moskovets@rokt.com", "ch": "Google"}, {"co": "PORELLES", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "vladislavkabanov95@gmail.com", "ch": "Google"}, {"co": "Sylvane", "dn": "Sylvane - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": "6956", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "alexb@sylvane.com", "ch": "Facebook"}, {"co": "Signature Popcorn", "dn": "Signature Popcorn - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "aa": "facebook-209828540690214", "l3": "TRUE", "fm": "1500", "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "amber@signaturepopcorn.com", "ch": "Facebook"}, {"co": "Battle Cat Co.", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "FALSE", "fm": null, "am": "1750", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "angelo@battlecatco.com", "ch": "Facebook"}, {"co": "GrowthPros", "dn": "Rose Anvil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": "6000", "am": "2257", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "brad@growthpros.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "chriswaczak@comcast.net", "ch": "Facebook"}, {"co": "Hearing8s", "dn": "Hearing8s - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "devin@hearing8s.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "donnablack102@gmail.com", "ch": "Facebook"}, {"co": "Notable Paper Goods + Services", "dn": "Notable Paper Goods + Services - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "e.joondeph@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elizabeth@tophealthsource.com", "ch": "Facebook"}, {"co": "Vitalyte", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elucas@vitalyte.com", "ch": "Facebook"}, {"co": "QG Med", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kethompson03@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kghxst1@gmail.com", "ch": "Facebook"}, {"co": "rEvolution", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kshalaby@revolutionworld.com", "ch": "Facebook"}, {"co": "Korvel", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "luigimangini10@gmail.com", "ch": "Facebook"}, {"co": "Better Benefits", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "50,000+", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "maxx@betterbenefits.com", "ch": "Facebook"}, {"co": "2 Dogs Treats", "dn": "2 Dogs Treats - New Deal", "mo": "2026-02-01", "ds": "Closed Lost (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": "348", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@2dogstreats.com", "ch": "Facebook"}, {"co": "2 Dogs Treats", "dn": "2 Dogs Treats - New Deal", "mo": "2026-03-01", "ds": "Scoping (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": "348", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@2dogstreats.com", "ch": "Facebook"}, {"co": "CobaltAi", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@cobaltai.app", "ch": "Facebook"}, {"co": "FIT Strong & Healthy", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "TRUE", "fm": null, "am": "41", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "natalia.vagner29@gmail.com", "ch": "Facebook"}, {"co": "Brickell Men's Products", "dn": "Brickell Men’s Products® - New Deal", "mo": "2026-03-01", "ds": "Scoping (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": "7000", "am": "7926", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "nick@brickellmensproducts.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": null, "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "rexxdraws@gmail.com", "ch": "Facebook"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "15,000 - 50,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "val.moskovets@rokt.com", "ch": "Facebook"}, {"co": "Alpacas of Montana", "dn": "Alpacas of Montana - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "aa": "linkedin-510107792", "l3": "1,000 - 14,999", "fm": "4000", "am": "1176", "ac": "linkedin-786689516", "ai": "786689516", "em": "budd@alpacastek.com", "ch": "LinkedIn"}, {"co": "Carrus Health", "dn": null, "mo": null, "ds": null, "aa": "linkedin-510107792", "l3": "15,000 - 50,000", "fm": null, "am": null, "ac": "linkedin-786689516", "ai": "786689516", "em": "michaelkitman@carrus-health.com", "ch": "LinkedIn"}, {"co": "Charle Agency - Shopify Plus Partner Agency", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "alice@charle.co.uk", "ch": "Google"}, {"co": "Azuna", "dn": "Azuna - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "l3": "50,000", "fm": "50000", "am": "65835", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@azunafresh.com", "ch": "Google"}, {"co": "Mars Men", "dn": "Mars Men - New Deal", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "50,000", "fm": null, "am": "114086", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@mengotomars.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "angel@themediterraneandish.com", "ch": "Google"}, {"co": "LANX", "dn": null, "mo": null, "ds": null, "l3": "50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "asam.shah@lanxshoes.com", "ch": "Google"}, {"co": "GrowthPros", "dn": "Rose Anvil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "6000", "am": "2199", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "brad@growthpros.com", "ch": "Google"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "l3": "50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian.davies589@gmail.com", "ch": "Google"}, {"co": "Nutravision", "dn": "Nutravision - ppu", "mo": "2026-03-01", "ds": "Interest (SMB)", "l3": "Lower than 1,000", "fm": "50", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian@nutravision.com.au", "ch": "Google"}, {"co": "LNDR", "dn": "LNDR US - New Deal", "mo": "2026-03-01", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "1513", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "caitlin.xuglassop@lndr.com", "ch": "Google"}, {"co": "Colorfil", "dn": "Colorfil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "16496", "am": "15784", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "chad@colorfil.com", "ch": "Google"}, {"co": "The Creative Department", "dn": null, "mo": null, "ds": null, "l3": "TRUE", "fm": null, "am": "255", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "cooper@thecreativedepartment.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "ddgsturt@gmail.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "ethan.zhong@xavier.vic.edu.au", "ch": "Google"}, {"co": "Drift and Tide", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": "1150", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "jkatsoudas@hotmail.com", "ch": "Google"}, {"co": "Encompass", "dn": "eReplacementParts.com - Rokt Thanks", "mo": "2026-04-01", "ds": "Scoping (SMB)", "l3": "50,000", "fm": "80000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "jscrine@encompass.com", "ch": "Google"}, {"co": "Moshulu", "dn": "Moshulu - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kate.james@moshulu.co.uk", "ch": "Google"}, {"co": "Liquidation.store", "dn": "Liquidation.store - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "3903", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kris@liquidation.store", "ch": "Google"}, {"co": "MCSets", "dn": "MCSets - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "Lower than 1,000", "fm": "500", "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "kyle@mcsets.com", "ch": "Google"}, {"co": "waversdreams", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": "103", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "lambospeed787@gmail.com", "ch": "Google"}, {"co": "Sunny Road", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "lizzy@sunnyroad.co", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "FALSE", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "michael.markosian@emater.io", "ch": "Google"}, {"co": "Taxify", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "nicklawson85@gmail.com", "ch": "Google"}, {"co": "Taxify", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "nicklawson85@gmail.com", "ch": "Google"}, {"co": "Hacked.com", "dn": null, "mo": null, "ds": null, "l3": "50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "revokat7@gmail.com", "ch": "Google"}, {"co": "Team Schostak", "dn": "Olga's Kitchen - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "rpjones@teamschostak.com", "ch": "Google"}, {"co": "Hose Pro International Pty Ltd", "dn": "Hoselink 2 stores", "mo": "2026-03-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "subodhprajapati@hoselink.com.au", "ch": "Google"}, {"co": "Enzo Clean", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "tamio@enzoclean.com", "ch": "Google"}, {"co": "Rokt", "dn": "test", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "val.moskovets@rokt.com", "ch": "Google"}, {"co": "PORELLES", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "vladislavkabanov95@gmail.com", "ch": "Google"}, {"co": "Sylvane", "dn": "Sylvane - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": "6876", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "alexb@sylvane.com", "ch": "Facebook"}, {"co": "Signature Popcorn", "dn": "Signature Popcorn - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "aa": "facebook-209828540690214", "l3": "TRUE", "fm": "1500", "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "amber@signaturepopcorn.com", "ch": "Facebook"}, {"co": "Battle Cat Co.", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "FALSE", "fm": null, "am": "1819", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "angelo@battlecatco.com", "ch": "Facebook"}, {"co": "GrowthPros", "dn": "Rose Anvil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": "6000", "am": "2199", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "brad@growthpros.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "chriswaczak@comcast.net", "ch": "Facebook"}, {"co": "Hearing8s", "dn": "Hearing8s - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "devin@hearing8s.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "donnablack102@gmail.com", "ch": "Facebook"}, {"co": "Notable Paper Goods + Services", "dn": "Notable Paper Goods + Services - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "e.joondeph@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elizabeth@tophealthsource.com", "ch": "Facebook"}, {"co": "Vitalyte", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elucas@vitalyte.com", "ch": "Facebook"}, {"co": "QG Med", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kethompson03@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kghxst1@gmail.com", "ch": "Facebook"}, {"co": "rEvolution", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kshalaby@revolutionworld.com", "ch": "Facebook"}, {"co": "Korvel", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "luigimangini10@gmail.com", "ch": "Facebook"}, {"co": "Better Benefits", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "50,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "maxx@betterbenefits.com", "ch": "Facebook"}, {"co": "2 Dogs Treats", "dn": "2 Dogs Treats - New Deal", "mo": "2026-02-01", "ds": "Closed Lost (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": "353", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@2dogstreats.com", "ch": "Facebook"}, {"co": "2 Dogs Treats", "dn": "2 Dogs Treats - New Deal", "mo": "2026-03-01", "ds": "Scoping (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": null, "am": "353", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@2dogstreats.com", "ch": "Facebook"}, {"co": "CobaltAi", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@cobaltai.app", "ch": "Facebook"}, {"co": "FIT Strong & Healthy", "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": "TRUE", "fm": null, "am": "37", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "natalia.vagner29@gmail.com", "ch": "Facebook"}, {"co": "Brickell Men's Products", "dn": "Brickell Men’s Products® - New Deal", "mo": "2026-03-01", "ds": "Scoping (SMB)", "aa": "facebook-209828540690214", "l3": "1,000 - 14,999", "fm": "7000", "am": "8520", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "nick@brickellmensproducts.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "aa": "facebook-209828540690214", "l3": null, "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "rexxdraws@gmail.com", "ch": "Facebook"}, {"co": "Rokt", "dn": "test", "mo": "2026-04-01", "ds": "Interest (SMB)", "aa": "facebook-209828540690214", "l3": "15,000 - 50,000", "fm": null, "am": null, "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "val.moskovets@rokt.com", "ch": "Facebook"}, {"co": "Alpacas of Montana", "dn": "Alpacas of Montana - New Deal", "mo": "Apr 2026", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "4,000", "am": "1,176", "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "budd@alpacastek.com", "ch": "LinkedIn"}, {"co": "Carrus Health", "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "michaelkitman@carrus-health.com", "ch": "LinkedIn"}, {"co": "Alpacas of Montana", "dn": "Alpacas of Montana - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "aa": "linkedin-510107792", "l3": "1,000 - 14,999", "fm": "4000", "am": "1134", "ac": "linkedin-786689516", "ai": "786689516", "em": "budd@alpacastek.com", "ch": "LinkedIn"}, {"co": "Orox Leather Co.", "dn": null, "mo": null, "ds": null, "aa": "linkedin-510107792", "l3": "50,000", "fm": null, "am": null, "ac": "linkedin-786689516", "ai": "786689516", "em": "jcarey@oroxleathermakers.com", "ch": "LinkedIn"}, {"co": "Leverage Clear", "dn": null, "mo": null, "ds": null, "aa": "linkedin-510107792", "l3": "1,000 - 14,999", "fm": null, "am": null, "ac": "linkedin-786689516", "ai": "786689516", "em": "jon@leverageclear.com", "ch": "LinkedIn"}, {"co": "Carrus Health", "dn": null, "mo": null, "ds": null, "aa": "linkedin-510107792", "l3": "15,000 - 50,000", "fm": null, "am": null, "ac": "linkedin-786689516", "ai": "786689516", "em": "michaelkitman@carrus-health.com", "ch": "LinkedIn"}, {"co": "TravelRights Pro", "dn": null, "mo": null, "ds": null, "aa": "linkedin-510107792", "l3": "Lower than 1,000", "fm": null, "am": null, "ac": "linkedin-786689516", "ai": "786689516", "em": "travelpro3377@gmail.com", "ch": "LinkedIn"}];
 
-const STAGE_LABELS = ["No deal", "Closed Won", "Closed Lost", "Evaluation", "Scoping", "Interest"];
-const STAGE_COUNTS = [64, 14, 10, 8, 6, 7];
-const STAGE_COLORS = ["#94a3b8", "#639922", "#E24B4A", "#EF9F27", "#1D9E75", "#7F77DD"];
-const L30_LABELS = ['Below 1K', '1K–15K', '15K–50K', '50K+'];
-const L30_COUNTS = [23, 38, 13, 7];
-const L30_COLORS = ['#888780', '#378ADD', '#EF9F27', '#639922'];
-const TOP_LABELS = ["Mars Men", "Azuna", "Colorfil", "Brickell Men's Products", "Sylvane", "Liquidation.store", "GrowthPros", "Battle Cat Co.", "LNDR", "Alpacas of Montana"];
-const TOP_ACTUAL = [114086, 65835, 16464, 8520, 6956, 4258, 2257, 1819, 1513, 1176];
-const TOP_FORECAST = [0, 50000, 16496, 7000, 0, 5000, 6000, 0, 5000, 4000];
-const CH_TOTAL    = [56, 44, 9];
-const CH_WITHDEAL = [25, 17, 3];
-const CH_WON      = [8, 6, 0];
-
-const fmtK = (n) => Math.round(n/1000) + 'K';
-
-new Chart(document.getElementById('chChannel'), {
+new Chart(document.getElementById('chart1'), {
   type: 'bar',
   data: {
     labels: ['Google', 'Facebook', 'LinkedIn'],
     datasets: [
-      { label: 'Total contacts', data: CH_TOTAL, backgroundColor: '#378ADD', borderRadius: 4 },
-      { label: 'With deals',     data: CH_WITHDEAL, backgroundColor: '#7F77DD', borderRadius: 4 },
-      { label: 'Closed won',     data: CH_WON, backgroundColor: '#639922', borderRadius: 4 },
+      { label: 'Total contacts', data: [56, 44, 9], backgroundColor: '#378ADD', borderRadius: 4 },
+      { label: 'With deals', data: [25, 17, 3], backgroundColor: '#7F77DD', borderRadius: 4 },
+      { label: 'Closed won', data: [8, 6, 0], backgroundColor: '#639922', borderRadius: 4 }
     ]
   },
   options: {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { stepSize: 5 } } }
   }
 });
 
-new Chart(document.getElementById('chStage'), {
+const stageData = {"Interest (SMB)": 7, "Evaluation (SMB)": 8, "Scoping (SMB)": 6, "Closed Won (SMB)": 14, "Closed Lost (SMB)": 10, "No deal": 64};
+const stageColors = {
+  'No deal': '#94a3b8', 'Closed Won (SMB)': '#639922', 'Closed Lost (SMB)': '#E24B4A',
+  'Evaluation (SMB)': '#EF9F27', 'Scoping (SMB)': '#1D9E75', 'Interest (SMB)': '#7F77DD'
+};
+const stageOrder = ['No deal','Closed Won (SMB)','Closed Lost (SMB)','Evaluation (SMB)','Scoping (SMB)','Interest (SMB)'];
+new Chart(document.getElementById('chart2'), {
   type: 'bar',
   data: {
-    labels: STAGE_LABELS,
-    datasets: [{ data: STAGE_COUNTS, backgroundColor: STAGE_COLORS, borderRadius: 4 }]
+    labels: stageOrder,
+    datasets: [{ data: stageOrder.map(k => stageData[k] || 0), backgroundColor: stageOrder.map(k => stageColors[k]), borderRadius: 4 }]
   },
   options: {
     indexAxis: 'y', responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
-    scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    scales: { x: { beginAtZero: true, ticks: { stepSize: 5 } }, y: { grid: { display: false } } }
   }
 });
 
-new Chart(document.getElementById('chL30'), {
+const l30 = {"Lower than 1,000": 23, "1,000 - 14,999": 38, "15,000 - 50,000": 13, "50,000+": 15};
+const l30Labels = ['Below 1K', '1K–15K', '15K–50K', '50K+'];
+const l30Keys = ['Lower than 1,000', '1,000 - 14,999', '15,000 - 50,000', '50,000+'];
+const l30Colors = ['#888780', '#378ADD', '#EF9F27', '#639922'];
+const l30Values = l30Keys.map(k => l30[k] || 0);
+new Chart(document.getElementById('chart3'), {
   type: 'doughnut',
-  data: { labels: L30_LABELS, datasets: [{ data: L30_COUNTS, backgroundColor: L30_COLORS }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '60%' }
+  data: { labels: l30Labels, datasets: [{ data: l30Values, backgroundColor: l30Colors, borderWidth: 0 }] },
+  options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false } } }
 });
-
-const l30Legend = document.getElementById('l30Legend');
-L30_LABELS.forEach((lbl, i) => {
+const donutLegend = document.getElementById('donut-legend');
+l30Labels.forEach((lbl, i) => {
   const el = document.createElement('span');
   el.className = 'legend-item';
-  el.innerHTML = '<span class="legend-swatch" style="background:' + L30_COLORS[i] + '"></span>' + lbl + ' (' + L30_COUNTS[i] + ')';
-  l30Legend.appendChild(el);
+  el.innerHTML = '<span class="legend-swatch" style="background:' + l30Colors[i] + '"></span>' + lbl + ' <span class="legend-count">(' + l30Values[i] + ')</span>';
+  donutLegend.appendChild(el);
 });
 
-new Chart(document.getElementById('chTop'), {
+const top10 = [{"co": "Mars Men", "am": 114086.0, "fm": 0}, {"co": "Mars Men", "am": 113073.0, "fm": 0}, {"co": "Azuna", "am": 65835.0, "fm": 50000.0}, {"co": "Azuna", "am": 59426.0, "fm": 50000.0}, {"co": "Colorfil", "am": 16464.0, "fm": 16496.0}, {"co": "Colorfil", "am": 15784.0, "fm": 16496.0}, {"co": "Brickell Men's Products", "am": 8520.0, "fm": 7000.0}, {"co": "Brickell Men's Products", "am": 7926.0, "fm": 7000.0}, {"co": "Sylvane", "am": 6956.0, "fm": 0}, {"co": "Sylvane", "am": 6876.0, "fm": 0}];
+new Chart(document.getElementById('chart4'), {
   type: 'bar',
   data: {
-    labels: TOP_LABELS,
+    labels: top10.map(c => c.co),
     datasets: [
-      { label: 'Actual MOV',   data: TOP_ACTUAL,   backgroundColor: '#1D9E75', borderRadius: 4 },
-      { label: 'Forecast MOV', data: TOP_FORECAST, backgroundColor: '#EF9F27', borderRadius: 4 },
+      { label: 'Actual MOV', data: top10.map(c => c.am), backgroundColor: '#1D9E75', borderRadius: 4 },
+      { label: 'Forecast MOV', data: top10.map(c => c.fm), backgroundColor: '#EF9F27', borderRadius: 4 }
     ]
   },
   options: {
     indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
+    plugins: { legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 10 } } },
     scales: {
-      x: { beginAtZero: true, ticks: { callback: (v) => fmtK(v) } }
+      x: { beginAtZero: true, ticks: { callback: v => (v/1000).toFixed(0) + 'K' } },
+      y: { grid: { display: false } }
     }
   }
 });
 
-function stageBadge(s) {
-  if (!s) return '<span class="dash">—</span>';
-  let cls = '';
-  if (s.indexOf('Closed Won') >= 0) cls = 'stage-won';
-  else if (s.indexOf('Closed Lost') >= 0) cls = 'stage-lost';
-  else if (s.indexOf('Evaluation') >= 0) cls = 'stage-eval';
-  else if (s.indexOf('Interest') >= 0) cls = 'stage-int';
-  else if (s.indexOf('Scoping') >= 0) cls = 'stage-scope';
-  return '<span class="stage-badge ' + cls + '">' + s + '</span>';
+let activeChannel = 'all';
+function stageBadge(ds) {
+  if (!ds) return '<span class="dash">—</span>';
+  let cls = 'stage-other';
+  if (ds.indexOf('Closed Won') !== -1) cls = 'stage-won';
+  else if (ds.indexOf('Closed Lost') !== -1) cls = 'stage-lost';
+  else if (ds.indexOf('Evaluation') !== -1) cls = 'stage-eval';
+  else if (ds.indexOf('Interest') !== -1) cls = 'stage-interest';
+  else if (ds.indexOf('Scoping') !== -1) cls = 'stage-scoping';
+  return '<span class="stage-badge ' + cls + '">' + ds + '</span>';
 }
-
 function chBadge(ch) {
-  return '<span class="ch-badge ch-' + ch + '">' + ch + '</span>';
+  if (!ch) return '';
+  const cls = ch === 'Google' ? 'ch-google' : ch === 'Facebook' ? 'ch-facebook' : 'ch-linkedin';
+  return '<span class="stage-badge ' + cls + '">' + ch + '</span>';
 }
-
-function esc(s) {
-  if (s === null || s === undefined) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function dashOrText(v) { return v ? v : '<span class="dash">—</span>'; }
+function fmtNum(v) {
+  if (v === null || v === undefined || v === '') return '<span class="dash">—</span>';
+  const n = parseFloat(String(v).replace(/[^\d.-]/g, ''));
+  if (isNaN(n)) return v;
+  return n.toLocaleString();
 }
-
-function fmtNum(n) {
-  if (n === null || n === undefined || n === '') return null;
-  const v = parseFloat(String(n).replace(/,/g,''));
-  if (isNaN(v)) return null;
-  return v.toLocaleString();
+function fmtActualMov(v) {
+  if (v === null || v === undefined || v === '') return '<span class="dash">—</span>';
+  const n = parseFloat(String(v).replace(/[^\d.-]/g, ''));
+  if (isNaN(n)) return v;
+  return '<span class="mov-actual">' + n.toLocaleString() + '</span>';
 }
-
-function render() {
+function renderTable() {
   const tbody = document.getElementById('tbody');
-  const filtered = activeChannel === 'All' ? DATA : DATA.filter(r => r.ch === activeChannel);
-  document.getElementById('recBadge').textContent = filtered.length + ' records';
-  const html = filtered.map(r => {
-    const actualFmt = fmtNum(r.am);
-    const forecastFmt = fmtNum(r.fm);
-    return '<tr>' +
-      '<td>' + (r.co ? esc(r.co) : '<span class="dash">—</span>') + '</td>' +
-      '<td>' + (r.dn ? esc(r.dn) : '<span class="dash">—</span>') + '</td>' +
-      '<td>' + (r.mo ? esc(r.mo) : '<span class="dash">—</span>') + '</td>' +
+  tbody.innerHTML = '';
+  const filtered = activeChannel === 'all' ? DATA : DATA.filter(r => r.ch === activeChannel);
+  document.getElementById('recordCount').textContent = filtered.length + ' records';
+  filtered.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>' + dashOrText(r.co) + '</td>' +
+      '<td>' + dashOrText(r.dn) + '</td>' +
+      '<td>' + dashOrText(r.mo) + '</td>' +
       '<td>' + stageBadge(r.ds) + '</td>' +
-      '<td>' + (r.l3 ? esc(r.l3) : '<span class="dash">—</span>') + '</td>' +
-      '<td class="right">' + (forecastFmt !== null ? forecastFmt : '<span class="dash">—</span>') + '</td>' +
-      '<td class="' + (actualFmt !== null ? 'actual' : 'right dash') + '">' + (actualFmt !== null ? actualFmt : '—') + '</td>' +
-      '<td class="mono">' + (r.aa ? esc(r.aa) : '<span class="dash">—</span>') + ' ' + chBadge(r.ch) + '</td>' +
-      '<td class="mono">' + (r.ac ? esc(r.ac) : '<span class="dash">—</span>') + '</td>' +
-      '<td class="mono">' + (r.ai ? esc(r.ai) : '<span class="dash">—</span>') + '</td>' +
-      '<td>' + (r.em ? esc(r.em) : '<span class="dash">—</span>') + '</td>' +
-      '</tr>';
-  }).join('');
-  tbody.innerHTML = html;
+      '<td>' + dashOrText(r.l3) + '</td>' +
+      '<td class="right">' + fmtNum(r.fm) + '</td>' +
+      '<td class="right">' + fmtActualMov(r.am) + '</td>' +
+      '<td class="mono">' + dashOrText(r.aa) + ' ' + chBadge(r.ch) + '</td>' +
+      '<td class="mono">' + dashOrText(r.ac) + '</td>' +
+      '<td class="mono">' + dashOrText(r.ai) + '</td>' +
+      '<td>' + dashOrText(r.em) + '</td>';
+    tbody.appendChild(tr);
+  });
 }
-
 function filterChannel(ch, btn) {
   activeChannel = ch;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  render();
+  renderTable();
 }
-
-render();
+renderTable();
 </script>
 </body>
 </html>
