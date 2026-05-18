@@ -2,367 +2,268 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AvenueZ - Paid Channels Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AvenueZ — Paid Channels Influenced Contacts</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0; padding: 24px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background: #f8fafc; color: #0f172a;
-  -webkit-font-smoothing: antialiased;
-}
-.container { max-width: 1400px; margin: 0 auto; }
-.header {
-  background: #0f172a; color: #fff;
-  border-radius: 12px; padding: 18px 22px;
-  margin-bottom: 20px;
-}
-.live-tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 11px; font-weight: 600; letter-spacing: 0.6px;
-  color: #cbd5e1; text-transform: uppercase;
-}
-.live-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
-  box-shadow: 0 0 0 0 rgba(34,197,94,0.7);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(34,197,94,0); }
-  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
-}
-.header h1 { margin: 8px 0 4px; font-size: 22px; font-weight: 600; }
-.header .sub { font-size: 13px; color: #94a3b8; }
-
-.kpi-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr);
-  gap: 12px; margin-bottom: 20px;
-}
-.kpi {
-  background: #fff; border: 0.5px solid #e2e8f0; border-radius: 8px;
-  padding: 16px 18px;
-}
-.kpi-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-.kpi-value { font-size: 28px; font-weight: 700; color: #0f172a; margin-top: 6px; line-height: 1.1; }
-.kpi-sub { font-size: 12px; color: #64748b; margin-top: 4px; }
-
-.chart-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 16px; margin-bottom: 20px;
-}
-.chart-card {
-  background: #fff; border: 0.5px solid #e2e8f0; border-radius: 12px;
-  padding: 18px 20px;
-}
-.chart-title { font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 12px; }
-.chart-wrap { position: relative; height: 280px; }
-
-.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; font-size: 12px; color: #475569; }
-.legend-item { display: inline-flex; align-items: center; gap: 6px; }
-.legend-swatch { width: 12px; height: 12px; border-radius: 3px; }
-
-.donut-legend { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; }
-.donut-legend-item { display: flex; align-items: center; gap: 8px; color: #475569; }
-.donut-legend-item .count { margin-left: auto; font-weight: 600; color: #0f172a; }
-
-.table-card {
-  background: #fff; border: 0.5px solid #e2e8f0; border-radius: 12px;
-  padding: 18px 20px;
-}
-.table-head {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px;
-}
-.table-title { font-size: 14px; font-weight: 600; color: #0f172a; }
-.badge-count {
-  display: inline-block; padding: 2px 10px; font-size: 11px;
-  background: #f1f5f9; color: #475569; border-radius: 12px; font-weight: 600;
-}
-.filter-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
-.filter-tab {
-  padding: 6px 14px; font-size: 12px; font-weight: 500;
-  border: 0.5px solid #e2e8f0; background: #fff; color: #475569;
-  border-radius: 6px; cursor: pointer; transition: all 0.15s;
-}
-.filter-tab:hover { background: #f8fafc; }
-.filter-tab.active { background: #0f172a; color: #fff; border-color: #0f172a; }
-
-.table-scroll { overflow-x: auto; }
-table.contacts { width: 100%; border-collapse: collapse; font-size: 12px; }
-table.contacts th {
-  text-align: left; padding: 10px 12px; font-weight: 600;
-  font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px;
-  border-bottom: 0.5px solid #e2e8f0; background: #f8fafc;
-  white-space: nowrap;
-}
-table.contacts td {
-  padding: 10px 12px; border-bottom: 0.5px solid #f1f5f9; color: #334155;
-  vertical-align: middle;
-}
-table.contacts tr:hover td { background: #f8fafc; }
-.mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11px; color: #64748b; }
-.num { text-align: right; font-variant-numeric: tabular-nums; }
-.mov-actual { color: #1D9E75; font-weight: 600; }
-.dash { color: #cbd5e1; }
-
-.stage-badge {
-  display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600;
-  border-radius: 4px; white-space: nowrap;
-}
-.stage-won { background: #E6F4DE; color: #2F4D0C; }
-.stage-lost { background: #FBE3E3; color: #76211F; }
-.stage-eval { background: #FDEBCC; color: #6B4203; }
-.stage-interest { background: #EEEDFE; color: #3C3489; }
-.stage-scoping { background: #DCF1E8; color: #0A4D32; }
-
-.channel-badge {
-  display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600;
-  border-radius: 4px;
-}
-.ch-google { background: #E6F1FB; color: #0C447C; }
-.ch-facebook { background: #EEEDFE; color: #3C3489; }
-.ch-linkedin { background: #E1F5EE; color: #085041; }
-
-.footer {
-  margin-top: 24px; text-align: center; font-size: 12px; color: #94a3b8;
-}
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    margin: 0; padding: 24px; background: #f1f5f9; color: #0f172a;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+  .header {
+    background: #0f172a; color: #fff; border-radius: 12px; padding: 18px 22px;
+    margin-bottom: 20px;
+  }
+  .live-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; letter-spacing: 0.08em; color: #cbd5e1;
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .green-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+  }
+  .header h1 { margin: 0; font-size: 22px; font-weight: 600; }
+  .header .subtitle { margin-top: 6px; font-size: 13px; color: #94a3b8; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+  .kpi { background: #fff; border: 0.5px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; }
+  .kpi .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; }
+  .kpi .value { font-size: 26px; font-weight: 600; color: #0f172a; line-height: 1; }
+  .kpi .sub { font-size: 12px; color: #64748b; margin-top: 6px; }
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .chart-card { background: #fff; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; }
+  .chart-card h3 { margin: 0 0 14px 0; font-size: 14px; font-weight: 600; color: #0f172a; }
+  .chart-wrap { position: relative; height: 280px; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 12px; font-size: 12px; color: #475569; }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+  .table-card { background: #fff; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; }
+  .table-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .table-head h3 { margin: 0; font-size: 14px; font-weight: 600; }
+  .record-badge { background: #f1f5f9; color: #475569; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
+  .tab { padding: 8px 14px; font-size: 12px; color: #64748b; border: none; background: transparent; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab.active { color: #0f172a; border-bottom-color: #0f172a; font-weight: 600; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { text-align: left; padding: 10px 8px; background: #f8fafc; color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 10px; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+  tbody td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; vertical-align: top; color: #334155; }
+  tbody tr:hover { background: #f8fafc; }
+  .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace; font-size: 11px; color: #64748b; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+  .badge-won { background: #DCFCE7; color: #166534; }
+  .badge-lost { background: #FEE2E2; color: #991B1B; }
+  .badge-eval { background: #FEF3C7; color: #92400E; }
+  .badge-interest { background: #EDE9FE; color: #5B21B6; }
+  .badge-scoping { background: #CCFBF1; color: #115E59; }
+  .badge-none { color: #cbd5e1; }
+  .mov-strong { color: #1D9E75; font-weight: 600; }
+  .mov-none { color: #cbd5e1; }
+  .right { text-align: right; }
+  .footer { text-align: center; margin-top: 24px; font-size: 12px; color: #64748b; }
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
-
   <div class="header">
-    <div class="live-tag"><span class="live-dot"></span>LIVE &middot; HUBSPOT SYNC EVERY 6 HOURS</div>
-    <h1>AvenueZ &mdash; paid channels influenced contacts</h1>
-    <div class="sub">Snapshot: May 15, 2026 &middot; Google AdWords, Facebook &amp; LinkedIn</div>
+    <div class="live-tag"><span class="green-dot"></span>LIVE · HUBSPOT SYNC EVERY 6 HOURS</div>
+    <h1>AvenueZ — paid channels influenced contacts</h1>
+    <div class="subtitle">Snapshot: May 18, 2026 · Google AdWords, Facebook &amp; LinkedIn</div>
   </div>
 
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">Total contacts</div><div class="kpi-value">52</div><div class="kpi-sub">across all paid channels</div></div>
-    <div class="kpi"><div class="kpi-label">Deals created</div><div class="kpi-value">19</div><div class="kpi-sub">37% of contacts</div></div>
-    <div class="kpi"><div class="kpi-label">Closed won</div><div class="kpi-value">6</div><div class="kpi-sub">32% win rate</div></div>
-    <div class="kpi"><div class="kpi-label">Total actual MOV</div><div class="kpi-value">217K</div><div class="kpi-sub">monthly orders</div></div>
-    <div class="kpi"><div class="kpi-label">Pipeline forecast</div><div class="kpi-value">250K</div><div class="kpi-sub">forecasted MOV</div></div>
+    <div class="kpi"><div class="label">Total contacts</div><div class="value">59</div></div>
+    <div class="kpi"><div class="label">Deals created</div><div class="value">24</div><div class="sub">41% of contacts</div></div>
+    <div class="kpi"><div class="label">Closed won</div><div class="value">7</div><div class="sub">29% win rate</div></div>
+    <div class="kpi"><div class="label">Total actual MOV</div><div class="value">227K</div><div class="sub">monthly orders</div></div>
+    <div class="kpi"><div class="label">Pipeline forecast</div><div class="value">257K</div><div class="sub">forecasted MOV</div></div>
   </div>
 
   <div class="chart-grid">
     <div class="chart-card">
-      <div class="chart-title">Contacts, deals &amp; wins by channel</div>
+      <h3>Contacts, deals &amp; wins by channel</h3>
       <div class="legend">
         <span class="legend-item"><span class="legend-swatch" style="background:#378ADD"></span>Total contacts</span>
         <span class="legend-item"><span class="legend-swatch" style="background:#7F77DD"></span>With deals</span>
         <span class="legend-item"><span class="legend-swatch" style="background:#639922"></span>Closed won</span>
       </div>
-      <div class="chart-wrap"><canvas id="chChannel"></canvas></div>
+      <div class="chart-wrap"><canvas id="chart1"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">Pipeline stage breakdown</div>
-      <div class="chart-wrap"><canvas id="chStage"></canvas></div>
-    </div>
-  </div>
-
-  <div class="chart-grid">
-    <div class="chart-card">
-      <div class="chart-title">L30 day order volume distribution</div>
-      <div class="chart-wrap"><canvas id="chL30"></canvas></div>
-      <div class="donut-legend" id="l30Legend"></div>
+      <h3>Pipeline stage breakdown</h3>
+      <div class="chart-wrap"><canvas id="chart2"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">Top companies by monthly order volume</div>
+      <h3>L30 day order volume distribution</h3>
+      <div class="legend" id="l30Legend"></div>
+      <div class="chart-wrap"><canvas id="chart3"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Top companies by monthly order volume</h3>
       <div class="legend">
         <span class="legend-item"><span class="legend-swatch" style="background:#1D9E75"></span>Actual MOV</span>
         <span class="legend-item"><span class="legend-swatch" style="background:#EF9F27"></span>Forecast MOV</span>
       </div>
-      <div class="chart-wrap"><canvas id="chTop"></canvas></div>
+      <div class="chart-wrap"><canvas id="chart4"></canvas></div>
     </div>
   </div>
 
   <div class="table-card">
     <div class="table-head">
-      <div class="table-title">All contacts</div>
-      <span class="badge-count" id="rowCount">52 records</span>
+      <h3>All contacts</h3>
+      <span class="record-badge" id="recordBadge">59 records</span>
     </div>
-    <div class="filter-tabs">
-      <button class="filter-tab active" data-ch="all" onclick="setFilter('all', this)">All</button>
-      <button class="filter-tab" data-ch="Google" onclick="setFilter('Google', this)">Google</button>
-      <button class="filter-tab" data-ch="Facebook" onclick="setFilter('Facebook', this)">Facebook</button>
-      <button class="filter-tab" data-ch="LinkedIn" onclick="setFilter('LinkedIn', this)">LinkedIn</button>
+    <div class="tabs">
+      <button class="tab active" data-ch="all" onclick="setChannel('all')">All</button>
+      <button class="tab" data-ch="Google" onclick="setChannel('Google')">Google</button>
+      <button class="tab" data-ch="Facebook" onclick="setChannel('Facebook')">Facebook</button>
+      <button class="tab" data-ch="LinkedIn" onclick="setChannel('LinkedIn')">LinkedIn</button>
     </div>
-    <div class="table-scroll">
-      <table class="contacts">
-        <thead><tr>
-          <th style="min-width:130px">Company name</th>
-          <th style="min-width:190px">Deal name</th>
-          <th style="min-width:100px">Create date</th>
-          <th style="min-width:145px">Deal stage</th>
-          <th style="min-width:120px">L30 day orders</th>
-          <th style="min-width:100px; text-align:right">Forecast MOV</th>
-          <th style="min-width:95px; text-align:right">Actual MOV</th>
-          <th style="min-width:155px">Ad account</th>
-          <th style="min-width:210px">Ad campaign</th>
-          <th style="min-width:140px">Ad campaign ID</th>
-          <th style="min-width:185px">Email</th>
-        </tr></thead>
+    <div class="table-wrap">
+      <table id="contactsTable">
+        <thead>
+          <tr>
+            <th style="min-width:130px">Company name</th>
+            <th style="min-width:190px">Deal name</th>
+            <th style="min-width:100px">Create date</th>
+            <th style="min-width:145px">Deal stage</th>
+            <th style="min-width:120px">L30 day orders</th>
+            <th style="min-width:100px" class="right">Forecast MOV</th>
+            <th style="min-width:95px" class="right">Actual MOV</th>
+            <th style="min-width:155px">Ad account</th>
+            <th style="min-width:210px">Ad campaign</th>
+            <th style="min-width:140px">Ad campaign ID</th>
+            <th style="min-width:185px">Email</th>
+          </tr>
+        </thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
   </div>
 
-  <div class="footer">Data sourced from HubSpot via AvenueZ paid channels &middot; Scheduled sync every 6 hours</div>
-
+  <div class="footer">Data sourced from HubSpot via AvenueZ paid channels · Scheduled sync every 6 hours</div>
 </div>
 
 <script>
-const CONTACTS = [{"co": "Charle Agency - Shopify Plus Partner Agency", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "alice@charle.co.uk", "ch": "Google"}, {"co": "Azuna", "dn": "Azuna - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "l3": "50,000+", "fm": "50000", "am": "59426", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@azunafresh.com", "ch": "Google"}, {"co": "Mars Men", "dn": "Mars Men - New Deal", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "50,000+", "fm": null, "am": "113073", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "andrew@mengotomars.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "angel@themediterraneandish.com", "ch": "Google"}, {"co": "LANX", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "asam.shah@lanxshoes.com", "ch": "Google"}, {"co": "GrowthPros", "dn": "Rose Anvil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "6000", "am": "2257", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "brad@growthpros.com", "ch": "Google"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian.davies589@gmail.com", "ch": "Google"}, {"co": "Nutravision", "dn": "Nutravision - ppu", "mo": "2026-03-01", "ds": "Interest (SMB)", "l3": "Lower than 1,000", "fm": "50", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "brian@nutravision.com.au", "ch": "Google"}, {"co": "LNDR", "dn": "LNDR US - New Deal", "mo": "2026-03-01", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "1513", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "caitlin.xuglassop@lndr.com", "ch": "Google"}, {"co": "Colorfil", "dn": "Colorfil - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "16496", "am": "16464", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "chad@colorfil.com", "ch": "Google"}, {"co": "The Creative Department", "dn": null, "mo": null, "ds": null, "l3": "TRUE", "fm": null, "am": "343", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "cooper@thecreativedepartment.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "ddgsturt@gmail.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "ethan.zhong@xavier.vic.edu.au", "ch": "Google"}, {"co": "Drift and Tide", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": "984", "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "jkatsoudas@hotmail.com", "ch": "Google"}, {"co": "Encompass", "dn": "eReplacementParts.com - Rokt Thanks", "mo": "2026-04-01", "ds": "Scoping (SMB)", "l3": "50,000+", "fm": "80000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "jscrine@encompass.com", "ch": "Google"}, {"co": "Moshulu", "dn": "Moshulu - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kate.james@moshulu.co.uk", "ch": "Google"}, {"co": "Liquidation.store", "dn": "Liquidation.store - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": "5000", "am": "4258", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "kris@liquidation.store", "ch": "Google"}, {"co": "MCSets", "dn": "MCSets - New Deal", "mo": "2026-04-01", "ds": "Interest (SMB)", "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "kyle@mcsets.com", "ch": "Google"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "FALSE", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "michael.markosian@emater.io", "ch": "Google"}, {"co": "Taxify", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "nicklawson85@gmail.com", "ch": "Google"}, {"co": "Hacked.com", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "revokat7@gmail.com", "ch": "Google"}, {"co": "Team Schostak", "dn": "Olga's Kitchen - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "15,000 - 50,000", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "rpjones@teamschostak.com", "ch": "Google"}, {"co": "Hose Pro International Pty Ltd", "dn": "Hoselink 2 stores", "mo": "2026-03-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": "25000", "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "subodhprajapati@hoselink.com.au", "ch": "Google"}, {"co": "Enzo Clean", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "tamio@enzoclean.com", "ch": "Google"}, {"co": "Rokt", "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "val.moskovets@rokt.com", "ch": "Google"}, {"co": "PORELLES", "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "vladislavkabanov95@gmail.com", "ch": "Google"}, {"co": "Sylvane", "dn": "Sylvane - New Deal", "mo": "2026-04-01", "ds": "Closed Won (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": "6956", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "alexb@sylvane.com", "ch": "Facebook"}, {"co": "Signature Popcorn", "dn": "Signature Popcorn - New Deal", "mo": "2026-03-01", "ds": "Closed Won (SMB)", "l3": "TRUE", "fm": "1500", "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "amber@signaturepopcorn.com", "ch": "Facebook"}, {"co": "Battle Cat Co.", "dn": null, "mo": null, "ds": null, "l3": "FALSE", "fm": null, "am": "1750", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "angelo@battlecatco.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "chriswaczak@comcast.net", "ch": "Facebook"}, {"co": "Hearing8s", "dn": "Hearing8s - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "devin@hearing8s.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "donnablack102@gmail.com", "ch": "Facebook"}, {"co": "Notable Paper Goods + Services", "dn": "Notable Paper Goods + Services - New Deal", "mo": "2026-04-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "e.joondeph@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elizabeth@tophealthsource.com", "ch": "Facebook"}, {"co": "Vitalyte", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "elucas@vitalyte.com", "ch": "Facebook"}, {"co": "QG Med", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kethompson03@gmail.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kghxst1@gmail.com", "ch": "Facebook"}, {"co": "rEvolution", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "kshalaby@revolutionworld.com", "ch": "Facebook"}, {"co": "Korvel", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "luigimangini10@gmail.com", "ch": "Facebook"}, {"co": "Better Benefits", "dn": null, "mo": null, "ds": null, "l3": "50,000+", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "maxx@betterbenefits.com", "ch": "Facebook"}, {"co": "2 Dogs Treats", "dn": "2 Dogs Treats - New Deal", "mo": "2026-02-01", "ds": "Closed Lost (SMB)", "l3": "1,000 - 14,999", "fm": null, "am": "348", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@2dogstreats.com", "ch": "Facebook"}, {"co": "CobaltAi", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "mike@cobaltai.app", "ch": "Facebook"}, {"co": "FIT Strong & Healthy", "dn": null, "mo": null, "ds": null, "l3": "TRUE", "fm": null, "am": "41", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "natalia.vagner29@gmail.com", "ch": "Facebook"}, {"co": "Brickell Men's Products", "dn": "Brickell Men’s Products® - New Deal", "mo": "2026-03-01", "ds": "Scoping (SMB)", "l3": "1,000 - 14,999", "fm": "7000", "am": "7926", "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "nick@brickellmensproducts.com", "ch": "Facebook"}, {"co": null, "dn": null, "mo": null, "ds": null, "l3": null, "fm": null, "am": null, "aa": "facebook-209828540690214", "ac": "facebook-120237736407690695", "ai": "120237736407690695", "em": "rexxdraws@gmail.com", "ch": "Facebook"}, {"co": "Alpacas of Montana", "dn": "Alpacas of Montana - New Deal", "mo": "2026-04-01", "ds": "Evaluation (SMB)", "l3": "1,000 - 14,999", "fm": "4000", "am": "1176", "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "budd@alpacastek.com", "ch": "LinkedIn"}, {"co": "Carrus Health", "dn": null, "mo": null, "ds": null, "l3": "15,000 - 50,000", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "michaelkitman@carrus-health.com", "ch": "LinkedIn"}, {"co": "waversdreams", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": "103", "aa": "adwords-5807075370", "ac": "adwords-19938108151", "ai": "19938108151", "em": "lambospeed787@gmail.com", "ch": "Google"}, {"co": "Sunny Road", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "adwords-5807075370", "ac": "adwords-22691141228", "ai": "22691141228", "em": "lizzy@sunnyroad.co", "ch": "Google"}, {"co": "Orox Leather Co.", "dn": null, "mo": null, "ds": null, "l3": "50,000", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "jcarey@oroxleathermakers.com", "ch": "LinkedIn"}, {"co": "Leverage Clear", "dn": null, "mo": null, "ds": null, "l3": "1,000 - 14,999", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "jon@leverageclear.com", "ch": "LinkedIn"}, {"co": "TravelRights Pro", "dn": null, "mo": null, "ds": null, "l3": "Lower than 1,000", "fm": null, "am": null, "aa": "linkedin-510107792", "ac": "linkedin-786689516", "ai": "786689516", "em": "travelpro3377@gmail.com", "ch": "LinkedIn"}];
+const DATA = [{"co":"Charle Agency - Shopify Plus Partner Agency","dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"alice@charle.co.uk","ch":"Google"},{"co":"Azuna","dn":"Azuna - New Deal","mo":"2026-04-01","ds":"Closed Won (SMB)","l3":"50,000+","fm":50000.0,"am":65835.0,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"andrew@azunafresh.com","ch":"Google"},{"co":"Mars Men","dn":"Mars Men - New Deal","mo":"2026-04-01","ds":"Interest (SMB)","l3":"50,000+","fm":null,"am":114086.0,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"andrew@mengotomars.com","ch":"Google"},{"co":null,"dn":null,"mo":null,"ds":null,"l3":"1,000 - 14,999","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"angel@themediterraneandish.com","ch":"Google"},{"co":"LANX","dn":null,"mo":null,"ds":null,"l3":"50,000+","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"asam.shah@lanxshoes.com","ch":"Google"},{"co":"GrowthPros","dn":"Rose Anvil - New Deal","mo":"2026-03-01","ds":"Closed Won (SMB)","l3":"1,000 - 14,999","fm":6000.0,"am":2257.0,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"brad@growthpros.com","ch":"Google"},{"co":"Rokt","dn":null,"mo":null,"ds":null,"l3":"50,000+","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"brian.davies589@gmail.com","ch":"Google"},{"co":"Nutravision","dn":"Nutravision - ppu","mo":"2026-03-01","ds":"Interest (SMB)","l3":"Lower than 1,000","fm":50.0,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"brian@nutravision.com.au","ch":"Google"},{"co":"LNDR","dn":"LNDR US - New Deal","mo":"2026-03-01","ds":"Evaluation (SMB)","l3":"1,000 - 14,999","fm":5000.0,"am":1513.0,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"caitlin.xuglassop@lndr.com","ch":"Google"},{"co":"Colorfil","dn":"Colorfil - New Deal","mo":"2026-03-01","ds":"Closed Won (SMB)","l3":"1,000 - 14,999","fm":16496.0,"am":16464.0,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"chad@colorfil.com","ch":"Google"},{"co":"The Creative Department","dn":null,"mo":null,"ds":null,"l3":"TRUE","fm":null,"am":343.0,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"cooper@thecreativedepartment.com","ch":"Google"},{"co":null,"dn":null,"mo":null,"ds":null,"l3":null,"fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"ddgsturt@gmail.com","ch":"Google"},{"co":null,"dn":null,"mo":null,"ds":null,"l3":"15,000 - 50,000","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"ethan.zhong@xavier.vic.edu.au","ch":"Google"},{"co":"Drift and Tide","dn":null,"mo":null,"ds":null,"l3":"1,000 - 14,999","fm":null,"am":1150.0,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"jkatsoudas@hotmail.com","ch":"Google"},{"co":"Encompass","dn":"eReplacementParts.com - Rokt Thanks","mo":"2026-04-01","ds":"Scoping (SMB)","l3":"50,000+","fm":80000.0,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"jscrine@encompass.com","ch":"Google"},{"co":"Moshulu","dn":"Moshulu - New Deal","mo":"2026-04-01","ds":"Closed Lost (SMB)","l3":"15,000 - 50,000","fm":25000.0,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"kate.james@moshulu.co.uk","ch":"Google"},{"co":"Liquidation.store","dn":"Liquidation.store - New Deal","mo":"2026-03-01","ds":"Closed Won (SMB)","l3":"1,000 - 14,999","fm":5000.0,"am":4258.0,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"kris@liquidation.store","ch":"Google"},{"co":"MCSets","dn":"MCSets - New Deal","mo":"2026-04-01","ds":"Interest (SMB)","l3":"Lower than 1,000","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"kyle@mcsets.com","ch":"Google"},{"co":null,"dn":null,"mo":null,"ds":null,"l3":"FALSE","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"michael.markosian@emater.io","ch":"Google"},{"co":"Taxify","dn":null,"mo":null,"ds":null,"l3":null,"fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"nicklawson85@gmail.com","ch":"Google"},{"co":"Taxify","dn":null,"mo":null,"ds":null,"l3":null,"fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"nicklawson85@gmail.com","ch":"Google"},{"co":"Hacked.com","dn":null,"mo":null,"ds":null,"l3":"50,000+","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"revokat7@gmail.com","ch":"Google"},{"co":"Team Schostak","dn":"Olga's Kitchen - New Deal","mo":"2026-04-01","ds":"Evaluation (SMB)","l3":"15,000 - 50,000","fm":25000.0,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"rpjones@teamschostak.com","ch":"Google"},{"co":"Hose Pro International Pty Ltd","dn":"Hoselink 2 stores","mo":"2026-03-01","ds":"Closed Lost (SMB)","l3":"1,000 - 14,999","fm":25000.0,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"subodhprajapati@hoselink.com.au","ch":"Google"},{"co":"Enzo Clean","dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"tamio@enzoclean.com","ch":"Google"},{"co":"Rokt","dn":null,"mo":null,"ds":null,"l3":"15,000 - 50,000","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"val.moskovets@rokt.com","ch":"Google"},{"co":"PORELLES","dn":null,"mo":null,"ds":null,"l3":null,"fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"vladislavkabanov95@gmail.com","ch":"Google"},{"co":"Sylvane","dn":"Sylvane - New Deal","mo":"2026-04-01","ds":"Closed Won (SMB)","l3":"1,000 - 14,999","fm":null,"am":6956.0,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"alexb@sylvane.com","ch":"Facebook"},{"co":"Signature Popcorn","dn":"Signature Popcorn - New Deal","mo":"2026-03-01","ds":"Closed Won (SMB)","l3":"TRUE","fm":1500.0,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"amber@signaturepopcorn.com","ch":"Facebook"},{"co":"Battle Cat Co.","dn":null,"mo":null,"ds":null,"l3":"FALSE","fm":null,"am":1819.0,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"angelo@battlecatco.com","ch":"Facebook"},{"co":"GrowthPros","dn":"Rose Anvil - New Deal","mo":"2026-03-01","ds":"Closed Won (SMB)","l3":"1,000 - 14,999","fm":6000.0,"am":2257.0,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"brad@growthpros.com","ch":"Facebook"},{"co":null,"dn":null,"mo":null,"ds":null,"l3":"1,000 - 14,999","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"chriswaczak@comcast.net","ch":"Facebook"},{"co":"Hearing8s","dn":"Hearing8s - New Deal","mo":"2026-04-01","ds":"Closed Lost (SMB)","l3":"1,000 - 14,999","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"devin@hearing8s.com","ch":"Facebook"},{"co":null,"dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"donnablack102@gmail.com","ch":"Facebook"},{"co":"Notable Paper Goods + Services","dn":"Notable Paper Goods + Services - New Deal","mo":"2026-04-01","ds":"Closed Lost (SMB)","l3":"1,000 - 14,999","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"e.joondeph@gmail.com","ch":"Facebook"},{"co":null,"dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"elizabeth@tophealthsource.com","ch":"Facebook"},{"co":"Vitalyte","dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"elucas@vitalyte.com","ch":"Facebook"},{"co":"QG Med","dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"kethompson03@gmail.com","ch":"Facebook"},{"co":null,"dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"kghxst1@gmail.com","ch":"Facebook"},{"co":"rEvolution","dn":null,"mo":null,"ds":null,"l3":"1,000 - 14,999","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"kshalaby@revolutionworld.com","ch":"Facebook"},{"co":"Korvel","dn":null,"mo":null,"ds":null,"l3":"1,000 - 14,999","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"luigimangini10@gmail.com","ch":"Facebook"},{"co":"Better Benefits","dn":null,"mo":null,"ds":null,"l3":"50,000+","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"maxx@betterbenefits.com","ch":"Facebook"},{"co":"2 Dogs Treats","dn":"2 Dogs Treats - New Deal","mo":"2026-02-01","ds":"Closed Lost (SMB)","l3":"1,000 - 14,999","fm":null,"am":353.0,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"mike@2dogstreats.com","ch":"Facebook"},{"co":"2 Dogs Treats","dn":"2 Dogs Treats - New Deal","mo":"2026-03-01","ds":"Scoping (SMB)","l3":"1,000 - 14,999","fm":null,"am":353.0,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"mike@2dogstreats.com","ch":"Facebook"},{"co":"CobaltAi","dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"mike@cobaltai.app","ch":"Facebook"},{"co":"FIT Strong & Healthy","dn":null,"mo":null,"ds":null,"l3":"TRUE","fm":null,"am":41.0,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"natalia.vagner29@gmail.com","ch":"Facebook"},{"co":"Brickell Men's Products","dn":"Brickell Men\u2019s Products\u00ae - New Deal","mo":"2026-03-01","ds":"Scoping (SMB)","l3":"1,000 - 14,999","fm":7000.0,"am":8520.0,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"nick@brickellmensproducts.com","ch":"Facebook"},{"co":null,"dn":null,"mo":null,"ds":null,"l3":null,"fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"rexxdraws@gmail.com","ch":"Facebook"},{"co":"Rokt","dn":null,"mo":null,"ds":null,"l3":"15,000 - 50,000","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"val.moskovets@rokt.com","ch":"Facebook"},{"co":"Alpacas of Montana","dn":"Alpacas of Montana - New Deal","mo":"2026-04-01","ds":"Evaluation (SMB)","l3":"1,000 - 14,999","fm":4000.0,"am":1176.0,"aa":"linkedin-510107792","ac":"linkedin-786689516","ai":"786689516","em":"budd@alpacastek.com","ch":"LinkedIn"},{"co":"Carrus Health","dn":null,"mo":null,"ds":null,"l3":"15,000 - 50,000","fm":null,"am":null,"aa":"linkedin-510107792","ac":"linkedin-786689516","ai":"786689516","em":"michaelkitman@carrus-health.com","ch":"LinkedIn"},{"co":"MCSets","dn":"MCSets - New Deal","mo":"2026-04-01","ds":"Evaluation (SMB)","l3":"Lower than 1,000","fm":500.0,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"kyle@mcsets.com","ch":"Google"},{"co":"waversdreams","dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":103.0,"aa":"adwords-5807075370","ac":"adwords-19938108151","ai":"19938108151","em":"lambospeed787@gmail.com","ch":"Google"},{"co":"Sunny Road","dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"lizzy@sunnyroad.co","ch":"Google"},{"co":"Rokt","dn":"test","mo":"2026-04-01","ds":"Interest (SMB)","l3":"15,000 - 50,000","fm":null,"am":null,"aa":"adwords-5807075370","ac":"adwords-22691141228","ai":"22691141228","em":"val.moskovets@rokt.com","ch":"Google"},{"co":"Rokt","dn":"test","mo":"2026-04-01","ds":"Interest (SMB)","l3":"15,000 - 50,000","fm":null,"am":null,"aa":"facebook-209828540690214","ac":"facebook-120237736407690695","ai":"120237736407690695","em":"val.moskovets@rokt.com","ch":"Facebook"},{"co":"Orox Leather Co.","dn":null,"mo":null,"ds":null,"l3":"50,000","fm":null,"am":null,"aa":"linkedin-510107792","ac":"linkedin-786689516","ai":"786689516","em":"jcarey@oroxleathermakers.com","ch":"LinkedIn"},{"co":"Leverage Clear","dn":null,"mo":null,"ds":null,"l3":"1,000 - 14,999","fm":null,"am":null,"aa":"linkedin-510107792","ac":"linkedin-786689516","ai":"786689516","em":"jon@leverageclear.com","ch":"LinkedIn"},{"co":"TravelRights Pro","dn":null,"mo":null,"ds":null,"l3":"Lower than 1,000","fm":null,"am":null,"aa":"linkedin-510107792","ac":"linkedin-786689516","ai":"786689516","em":"travelpro3377@gmail.com","ch":"LinkedIn"}];
 let activeChannel = 'all';
 
-function fmtNum(n) {
-  if (n === null || n === undefined || n === '' || isNaN(n)) return null;
-  const v = parseFloat(String(n).replace(/,/g,''));
-  if (isNaN(v)) return null;
-  return v;
+function stageBadge(ds) {
+  if (!ds) return '<span class="badge-none">—</span>';
+  if (ds.includes('Closed Won')) return '<span class="badge badge-won">Closed Won</span>';
+  if (ds.includes('Closed Lost')) return '<span class="badge badge-lost">Closed Lost</span>';
+  if (ds.includes('Evaluation')) return '<span class="badge badge-eval">Evaluation</span>';
+  if (ds.includes('Interest')) return '<span class="badge badge-interest">Interest</span>';
+  if (ds.includes('Scoping')) return '<span class="badge badge-scoping">Scoping</span>';
+  return ds;
+}
+function fmt(n) {
+  if (n === null || n === undefined) return '<span class="mov-none">—</span>';
+  return Number(n).toLocaleString();
 }
 function fmtMov(n) {
-  const v = fmtNum(n);
-  if (v === null) return '<span class="dash">&mdash;</span>';
-  return v.toLocaleString();
+  if (n === null || n === undefined) return '<span class="mov-none">—</span>';
+  return '<span class="mov-strong">' + Number(n).toLocaleString() + '</span>';
 }
-function stageBadge(s) {
-  if (!s) return '<span class="dash">&mdash;</span>';
-  let cls = 'stage-interest';
-  if (s.indexOf('Closed Won') >= 0) cls = 'stage-won';
-  else if (s.indexOf('Closed Lost') >= 0) cls = 'stage-lost';
-  else if (s.indexOf('Evaluation') >= 0) cls = 'stage-eval';
-  else if (s.indexOf('Scoping') >= 0) cls = 'stage-scoping';
-  else if (s.indexOf('Interest') >= 0) cls = 'stage-interest';
-  return '<span class="stage-badge ' + cls + '">' + s.replace(' (SMB)','') + '</span>';
-}
-function safe(v) {
-  if (v === null || v === undefined || v === '') return '<span class="dash">&mdash;</span>';
-  return String(v).replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function fmtDate(s) {
-  if (!s) return '<span class="dash">&mdash;</span>';
-  return String(s);
-}
-function renderTable() {
-  const filtered = activeChannel === 'all' ? CONTACTS : CONTACTS.filter(r => r.ch === activeChannel);
-  const tbody = document.getElementById('tbody');
-  tbody.innerHTML = filtered.map(r => {
-    const am = fmtNum(r.am);
-    const amCell = am !== null
-      ? '<td class="num mov-actual">' + am.toLocaleString() + '</td>'
-      : '<td class="num"><span class="dash">&mdash;</span></td>';
-    return '<tr>' +
-      '<td><strong>' + safe(r.co) + '</strong></td>' +
-      '<td>' + safe(r.dn) + '</td>' +
-      '<td>' + fmtDate(r.mo) + '</td>' +
-      '<td>' + stageBadge(r.ds) + '</td>' +
-      '<td>' + safe(r.l3) + '</td>' +
-      '<td class="num">' + fmtMov(r.fm) + '</td>' +
-      amCell +
-      '<td class="mono">' + safe(r.aa) + '</td>' +
-      '<td class="mono">' + safe(r.ac) + '</td>' +
-      '<td class="mono">' + safe(r.ai) + '</td>' +
-      '<td>' + safe(r.em) + '</td>' +
-    '</tr>';
-  }).join('');
-  document.getElementById('rowCount').textContent = filtered.length + ' records';
-}
-function setFilter(ch, btn) {
+function setChannel(ch) {
   activeChannel = ch;
-  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTable();
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.ch === ch);
+  });
+  render();
 }
-renderTable();
+function render() {
+  const tbody = document.getElementById('tbody');
+  const filtered = activeChannel === 'all' ? DATA : DATA.filter(r => r.ch === activeChannel);
+  document.getElementById('recordBadge').textContent = filtered.length + ' records';
+  tbody.innerHTML = filtered.map(r => '<tr>' +
+    '<td>' + (r.co || '<span class="mov-none">—</span>') + '</td>' +
+    '<td>' + (r.dn || '<span class="mov-none">—</span>') + '</td>' +
+    '<td>' + (r.mo || '<span class="mov-none">—</span>') + '</td>' +
+    '<td>' + stageBadge(r.ds) + '</td>' +
+    '<td>' + (r.l3 || '<span class="mov-none">—</span>') + '</td>' +
+    '<td class="right">' + fmt(r.fm) + '</td>' +
+    '<td class="right">' + fmtMov(r.am) + '</td>' +
+    '<td class="mono">' + (r.aa || '') + '</td>' +
+    '<td class="mono">' + (r.ac || '') + '</td>' +
+    '<td class="mono">' + (r.ai || '') + '</td>' +
+    '<td>' + (r.em || '') + '</td>' +
+    '</tr>'
+  ).join('');
+}
+render();
 
-// --- Charts ---
-const fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-Chart.defaults.font.family = fontFamily;
-Chart.defaults.font.size = 11;
-Chart.defaults.color = '#475569';
-
-new Chart(document.getElementById('chChannel'), {
+new Chart(document.getElementById('chart1'), {
   type: 'bar',
   data: {
-    labels: ["Google", "Facebook", "LinkedIn"],
+    labels: ['Google', 'Facebook', 'LinkedIn'],
     datasets: [
-      { label: 'Total contacts', data: [28, 19, 5], backgroundColor: '#378ADD', borderRadius: 4 },
-      { label: 'With deals',    data: [12, 6, 1],  backgroundColor: '#7F77DD', borderRadius: 4 },
-      { label: 'Closed won',    data: [4, 2, 0],    backgroundColor: '#639922', borderRadius: 4 }
+      { label: 'Total contacts', data: [31, 23, 5], backgroundColor: '#378ADD' },
+      { label: 'With deals', data: [14, 9, 1], backgroundColor: '#7F77DD' },
+      { label: 'Closed won', data: [4, 3, 0], backgroundColor: '#639922' }
     ]
   },
   options: {
-    maintainAspectRatio: false,
+    responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { display: false } },
-      y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#f1f5f9' } }
-    }
+    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
   }
 });
 
-new Chart(document.getElementById('chStage'), {
+const pipelineLabels = ["No deal", "Closed Won", "Closed Lost", "Evaluation", "Scoping", "Interest"];
+const pipelineValues = [35, 7, 5, 4, 3, 5];
+const pipelineColors = ["#94a3b8", "#639922", "#E24B4A", "#EF9F27", "#1D9E75", "#7F77DD"];
+new Chart(document.getElementById('chart2'), {
   type: 'bar',
-  data: {
-    labels: ["No deal", "Closed Won", "Closed Lost", "Evaluation", "Scoping", "Interest"],
-    datasets: [{
-      data: [33, 6, 5, 3, 2, 3],
-      backgroundColor: ["#94a3b8", "#639922", "#E24B4A", "#EF9F27", "#1D9E75", "#7F77DD"],
-      borderRadius: 4
-    }]
-  },
+  data: { labels: pipelineLabels, datasets: [{ data: pipelineValues, backgroundColor: pipelineColors }] },
   options: {
-    indexAxis: 'y',
-    maintainAspectRatio: false,
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
-    scales: {
-      x: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#f1f5f9' } },
-      y: { grid: { display: false } }
-    }
+    scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
   }
 });
 
-const l30Data = [13, 17, 5, 7];
-const l30LabelsArr = ["Below 1K", "1K-15K", "15K-50K", "50K+"];
-const l30ColorArr = ["#888780", "#378ADD", "#EF9F27", "#639922"];
-new Chart(document.getElementById('chL30'), {
+const l30Labels = ["Below 1K", "1K\u201315K", "15K\u201350K", "50K+"];
+const l30Values = [14, 19, 8, 8];
+const l30Colors = ["#888780", "#378ADD", "#EF9F27", "#639922"];
+new Chart(document.getElementById('chart3'), {
   type: 'doughnut',
-  data: { labels: l30LabelsArr, datasets: [{ data: l30Data, backgroundColor: l30ColorArr, borderWidth: 2, borderColor: '#fff' }] },
+  data: { labels: l30Labels, datasets: [{ data: l30Values, backgroundColor: l30Colors }] },
   options: {
-    maintainAspectRatio: false,
-    cutout: '62%',
-    plugins: { legend: { display: false } }
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } }, cutout: '60%'
   }
 });
-const l30Legend = document.getElementById('l30Legend');
-l30Legend.innerHTML = l30LabelsArr.map((lbl,i) =>
-  '<div class="donut-legend-item"><span class="legend-swatch" style="background:' + l30ColorArr[i] + '"></span>' + lbl + '<span class="count">' + l30Data[i] + '</span></div>'
+document.getElementById('l30Legend').innerHTML = l30Labels.map((lbl, i) =>
+  '<span class="legend-item"><span class="legend-swatch" style="background:' + l30Colors[i] + '"></span>' +
+  lbl + ' (' + l30Values[i] + ')</span>'
 ).join('');
 
-new Chart(document.getElementById('chTop'), {
+const topCoNames = ["Mars Men", "Azuna", "Colorfil", "Brickell Men's Products", "Sylvane", "GrowthPros", "Liquidation.store", "Battle Cat Co.", "LNDR", "Alpacas of Montana"];
+const topCoActual = [114086.0, 65835.0, 16464.0, 8520.0, 6956.0, 4514.0, 4258.0, 1819.0, 1513.0, 1176.0];
+const topCoForecast = [0, 50000.0, 16496.0, 7000.0, 0, 12000.0, 5000.0, 0, 5000.0, 4000.0];
+new Chart(document.getElementById('chart4'), {
   type: 'bar',
   data: {
-    labels: ["Mars Men", "Azuna", "Colorfil", "Brickell Men's Products", "Sylvane", "Liquidation.store", "GrowthPros", "Battle Cat Co.", "LNDR", "Alpacas of Montana"],
+    labels: topCoNames,
     datasets: [
-      { label: 'Actual MOV',   data: [113073.0, 59426.0, 16464.0, 7926.0, 6956.0, 4258.0, 2257.0, 1750.0, 1513.0, 1176.0],   backgroundColor: '#1D9E75', borderRadius: 4 },
-      { label: 'Forecast MOV', data: [0, 50000.0, 16496.0, 7000.0, 0, 5000.0, 6000.0, 0, 5000.0, 4000.0], backgroundColor: '#EF9F27', borderRadius: 4 }
+      { label: 'Actual MOV', data: topCoActual, backgroundColor: '#1D9E75' },
+      { label: 'Forecast MOV', data: topCoForecast, backgroundColor: '#EF9F27' }
     ]
   },
   options: {
-    indexAxis: 'y',
-    maintainAspectRatio: false,
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-      x: {
-        beginAtZero: true,
-        ticks: { callback: (v) => Math.round(v/1000) + 'K' },
-        grid: { color: '#f1f5f9' }
-      },
-      y: { grid: { display: false } }
+      x: { beginAtZero: true,
+        ticks: { callback: function(v) { return Math.round(v/1000) + 'K'; } }
+      }
     }
   }
 });
